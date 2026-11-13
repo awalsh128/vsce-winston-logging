@@ -153,7 +153,12 @@ describe("vsce-winston-logging", () => {
     let dir: string;
 
     beforeEach(() => (dir = fs.mkdtempSync(path.join(os.tmpdir(), "vsce-winston-logging-"))));
-    afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
+    afterEach(async () => {
+      logger.setFileLogging(undefined);
+      // File transports open and close their files asynchronously.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 20 });
+    });
 
     const fileTransports = () => logger.transports.filter((t) => t instanceof winston.transports.File);
 

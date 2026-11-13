@@ -303,7 +303,11 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
   setFileLogging(filepath?: string, baseDir?: string): string | undefined {
     this.transports
       .filter((t) => t instanceof winston.transports.File)
-      .forEach((t) => this.remove(t));
+      .forEach((t) => {
+        this.remove(t);
+        // remove() only unpipes the transport, so close it to release the file handle.
+        t.close?.();
+      });
 
     if (!filepath || filepath.trim() === "") {
       this.info("File logging disabled");
