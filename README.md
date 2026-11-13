@@ -2,7 +2,7 @@
   <img src="images/logo.png" alt="vsce-winston-logging logo" width="128" height="128">
 </p>
 
-<h1 align="center">vsce-winston-logging</h1>
+<h1 align="center">VSCE Winston Logging</h1>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/vsce-winston-logging"><img src="https://img.shields.io/npm/v/vsce-winston-logging?label=npm&color=%2314b8a6" alt="npm version"></a>
