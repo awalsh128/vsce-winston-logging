@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+ <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#0f766e"/></linearGradient></defs>
+ <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#g)"/>
+ <rect x="36" y="48" width="184" height="160" rx="24" fill="#fff"/>
+ <path d="M36 72 A24 24 0 0 1 60 48 H196 A24 24 0 0 1 220 72 V80 H36 Z" fill="#ccfbf1"/>
+ <circle cx="58" cy="64" r="6" fill="#0f766e"/>
+ <circle cx="78" cy="64" r="6" fill="#0f766e" opacity=".55"/>
+ <circle cx="98" cy="64" r="6" fill="#0f766e" opacity=".3"/>
+ <g stroke-width="12" stroke-linecap="round">
+  <path d="M60 108 H68" stroke="#ef4444"/>
+  <path d="M88 108 H196" stroke="#0f766e"/>
+  <path d="M60 136 H68" stroke="#f59e0b"/>
+  <path d="M88 136 H168" stroke="#0f766e"/>
+  <path d="M60 164 H68" stroke="#14b8a6"/>
+  <path d="M88 164 H184" stroke="#0f766e"/>
+ </g>
+ <g stroke="#0f766e" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 20" opacity=".45">
+  <path d="M60 188 H140"/>
+ </g>
+</svg>
