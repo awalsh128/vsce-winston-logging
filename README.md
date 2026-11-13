@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/logo.png" alt="vsce-winston-logging logo" width="128" height="128">
+</p>
+
 <h1 align="center">vsce-winston-logging</h1>
 
 <p align="center">
