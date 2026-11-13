@@ -1,6 +1,6 @@
 {
   "name": "vsce-winston-logging",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Customized Winston logger for VS Code extensions, writing to a LogOutputChannel with lazy logging support.",
   "keywords": [
     "vscode",
@@ -20,11 +20,22 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
+    "prepare": "husky",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "mocha",
-    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test",
+    "prepack": "npm run build"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "engines": {
     "vscode": "^1.74.0"
@@ -44,12 +55,15 @@
     "winston-transport": "^4.9.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.11",
     "@types/triple-beam": "^1.3.5",
     "@types/vscode": "~1.74.0",
     "chai": "^6.2.2",
+    "husky": "^9.1.7",
     "mocha": "^11.7.5",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2"

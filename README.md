@@ -147,11 +147,13 @@ logger.info(`Scan finished in ${benchmark.getDeltaAsText()}`); // "Scan finished
 ## Development
 
 ```sh
-npm install
-npm test          # mocha, with a stubbed `vscode` module (no VS Code download needed)
-npm run typecheck
+npm install       # also installs the husky git hooks
+npm run check     # typecheck and unit tests, with a stubbed `vscode` module
 npm run build     # emits dist/
 ```
+
+Commits follow Conventional Commits, which semantic-release uses to version releases. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the hooks, branches and npm publishing.
 
 ## License
 

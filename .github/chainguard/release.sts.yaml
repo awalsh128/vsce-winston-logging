@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/octo-sts/app/refs/heads/main/pkg/octosts/octosts.TrustPolicy.json
+
+# Tokens for the semantic-release action to push release tags. Octo STS reads this file from the
+# default branch (main), and only the publish workflow running on main or staging matches. The
+# subject carries the owner and repository IDs, so a repository that later takes this name doesn't
+# match either. See CONTRIBUTING.md#release-credentials.
+issuer: https://token.actions.githubusercontent.com
+subject_pattern: "repo:awalsh128@2087466/vsce-winston-logging@1457047089:.*"
+claim_pattern:
+  ref: "refs/heads/(main|staging)"
+  job_workflow_ref: "awalsh128/vsce-winston-logging/\\.github/workflows/publish\\.yml@refs/heads/(main|staging)"
+
+permissions:
+  contents: write

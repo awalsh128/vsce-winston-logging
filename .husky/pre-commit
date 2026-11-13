@@ -1,0 +1,2 @@
+# Husky runs this before each commit; `npm install` enables it through the prepare script.
+npm run --silent check
