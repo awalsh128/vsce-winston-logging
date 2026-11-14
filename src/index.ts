@@ -285,6 +285,7 @@ export interface ExtensionLoggerOptions {
    * format, so `format` does not apply to them.
    */
   transports?: TransportStream[];
+  /**
    * The extension's configuration section, such as `"myExt"`. When set, the section's settings are
    * logged at debug level when the logger is created.
    */
