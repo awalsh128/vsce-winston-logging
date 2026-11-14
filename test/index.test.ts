@@ -24,6 +24,7 @@ describe("vsce-winston-logging", () => {
   beforeEach(() => {
     state.initialLevel = LogLevel.Info;
     workspace.workspaceFolders = undefined;
+    workspace.settings = {};
     logger = new ExtensionLogger({ name: "Test" });
   });
 
@@ -136,6 +137,28 @@ describe("vsce-winston-logging", () => {
       const shown = new ExtensionLogger({ name: "Shown", show: true });
       expect(channel().shown).to.be.true;
       shown.dispose();
+    });
+
+    it("logs its settings at debug level when created", async () => {
+      state.initialLevel = LogLevel.Debug;
+      workspace.settings = { myExt: { logFile: "out.log" } };
+      const debugLogger = new ExtensionLogger({ name: "Debug", configSection: "myExt" });
+      await flush();
+
+      expect(channel().lines).to.deep.equal([
+        [
+          "debug",
+          'Logger created\n  name: "Debug"\n  level: "debug"\n  show: false\n  format: default\n' +
+            '  configSection: "myExt"',
+        ],
+        ["debug", 'Settings for "myExt":\n{\n  "logFile": "out.log"\n}'],
+      ]);
+      debugLogger.dispose();
+    });
+
+    it("does not log its settings above debug level", async () => {
+      await flush();
+      expect(channel().lines).to.be.empty;
     });
 
     it("stops following the channel and disposes it on dispose", () => {
