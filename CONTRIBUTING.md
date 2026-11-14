@@ -71,6 +71,11 @@ Every release is gated by CI on the exact commit being released:
 - Official releases publish to npm through trusted publishing, with provenance. npm trusts only
   [publish.yml](.github/workflows/publish.yml) started on its own, which candidates are not (ci.yml
   calls it).
+- Every release builds the API docs ([typedoc.json](typedoc.json)) in semantic-release's `prepare`
+  step, through `@semantic-release/exec`, so a docs failure stops the release before it is tagged.
+  Only official releases deploy them to GitHub Pages; candidates and runs that release nothing
+  leave the site unchanged. Pages must be set to deploy from GitHub Actions, and the `github-pages`
+  environment restricted to `main`.
 - Manual runs first require a successful CI run for the commit. Start one with `dry-run: true` to
   preview the next version without tagging:
 

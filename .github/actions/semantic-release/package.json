@@ -4,6 +4,7 @@
   "description": "Release tools for the semantic-release action, locked apart from the root package",
   "license": "Apache-2.0",
   "dependencies": {
+    "@semantic-release/exec": "7.1.0",
     "conventional-changelog-conventionalcommits": "9.3.1",
     "semantic-release": "25.0.9"
   },
