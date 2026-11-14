@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: release
+    outputs:
+      version: ${{ steps.release.outputs.version }} # Empty when nothing was released
     # One release per branch at a time; never cancel one that is tagging.
     concurrency:
       group: release-${{ github.ref }}
@@ -39,6 +41,7 @@ jobs:
       contents: write # For GitHub releases
       id-token: write # For OIDC: the Octo STS tag token and npm trusted publishing with provenance
       issues: write # For semantic-release comments
+      pages: read # For configure-pages to read the Pages site settings
       pull-requests: write # For semantic-release comments
     steps:
       - name: Checkout repository
@@ -61,8 +64,44 @@ jobs:
         with:
           ignore-scripts: true
 
+      # Also builds the API docs (see release.config.cjs) and sets the `version` output when it
+      # releases.
       - name: Release
+        id: release
         uses: ./.github/actions/semantic-release
         with:
           working-directory: .
           dry-run: ${{ inputs.dry-run || false }}
+
+      # Only official releases update the docs site. Dry runs and runs that release nothing leave
+      # the `version` output empty.
+      - name: Setup Pages
+        if: ${{ github.ref == 'refs/heads/main' && steps.release.outputs.version != '' }}
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        if: ${{ github.ref == 'refs/heads/main' && steps.release.outputs.version != '' }}
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/api
+
+  # Deploys in its own job so it can use the github-pages environment, which records each deployment
+  # and only allows main. The release job can't use it because it also runs on staging.
+  deploy-pages:
+    needs: release
+    if: ${{ github.ref == 'refs/heads/main' && needs.release.outputs.version != '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write # For GitHub Pages deployment
+      id-token: write # For OIDC verification of the Pages deployment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
