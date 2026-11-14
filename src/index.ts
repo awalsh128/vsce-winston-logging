@@ -19,6 +19,11 @@ export const LOG_LEVELS: Readonly<Record<LogLevel, number>> = {
   trace: 4,
 };
 
+/** Whether a string is one of the logger's levels. */
+export function isLogLevel(level: string): level is LogLevel {
+  return Object.hasOwn(LOG_LEVELS, level);
+}
+
 /**
  * Maps a VS Code log level to a logger level. `Off` maps to `"off"`, which silences the logger.
  *
@@ -168,24 +173,10 @@ export class OutputChannelTransport extends TransportStream {
     const message = String(info[MESSAGE] ?? info.message ?? "");
     const level = String(info[LEVEL] ?? info.level ?? "info");
 
-    switch (level) {
-      case "error":
-        this.outputChannel.error(message);
-        break;
-      case "warn":
-        this.outputChannel.warn(message);
-        break;
-      case "info":
-        this.outputChannel.info(message);
-        break;
-      case "debug":
-        this.outputChannel.debug(message);
-        break;
-      case "trace":
-        this.outputChannel.trace(message);
-        break;
-      default:
-        this.outputChannel.appendLine(`[UNKNOWN/${level}] ${message}`);
+    if (isLogLevel(level)) {
+      this.outputChannel[level](message);
+    } else {
+      this.outputChannel.appendLine(`[UNKNOWN/${level}] ${message}`);
     }
     next();
   }
@@ -196,7 +187,7 @@ export class OutputChannelTransport extends TransportStream {
  * level is set.
  */
 export function setLogLevel(logger: winston.Logger, level: LogLevel | "off"): void {
-  const previous = logger.silent ? "off" : logger.level;
+  const previous: string = logger.silent ? "off" : logger.level;
   if (level === "off") {
     logger.silent = true;
     return;
@@ -238,6 +229,48 @@ export class Benchmark {
   }
 }
 
+/** What a `DisposableBenchmark` logs when it is disposed: the level and the line without the delta. */
+export interface BenchmarkLog {
+  /** The level to log at. */
+  level: LogLevel;
+  /** The message; the elapsed time is appended to it. */
+  message: string;
+}
+
+/**
+ * Stopwatch that logs the elapsed time when it is disposed, such as with `using` or by adding it to
+ * the extension's subscriptions.
+ *
+ * The lambda runs only on disposal, and only when the level it returns is enabled, so the message
+ * costs nothing when it is not logged. The lambda picks the level, and the elapsed time is appended
+ * to its message, such as `Scan finished (42ms)`.
+ *
+ * ```ts
+ * using _ = new DisposableBenchmark(logger, () => ({ level: "debug", message: "Scan finished" }));
+ * ```
+ */
+export class DisposableBenchmark extends Benchmark implements vscode.Disposable {
+  /**
+   * @param logger The logger to write to.
+   * @param getLog Returns the level and message to log; called when the benchmark is disposed.
+   */
+  constructor(
+    private readonly logger: LazyLogger,
+    private readonly getLog: () => BenchmarkLog,
+  ) {
+    super();
+  }
+
+  /** Logs the lambda's message at its level, followed by the elapsed time. */
+  dispose(): void {
+    if (this.logger.silent || !this.logger.isLevelEnabled(this.getLog().level)) {
+      return;
+    }
+    const { level, message } = this.getLog();
+    this.logger.logLazy(level, () => `${message} (${this.getDeltaAsText()})`);
+  }
+}
+
 /** Options for `ExtensionLogger`. */
 export interface ExtensionLoggerOptions {
   /** Output channel name, usually the extension's display name. */
@@ -246,6 +279,12 @@ export interface ExtensionLoggerOptions {
   show?: boolean;
   /** Formats the message body of each line. Defaults to `defaultFormat`. */
   format?: (info: TransformableInfo) => string;
+  /**
+   * Additional Winston transports, alongside the output channel. They follow the channel's level
+   * like the output channel does, and are closed when the logger is disposed. Each uses its own
+   * format, so `format` does not apply to them.
+   */
+  transports?: TransportStream[];
   /**
    * The extension's configuration section, such as `"myExt"`. When set, the section's settings are
    * logged at debug level when the logger is created.
@@ -264,6 +303,8 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
   readonly outputChannel: vscode.LogOutputChannel;
   private readonly format_: (info: TransformableInfo) => string;
   private readonly levelSubscription: vscode.Disposable;
+  /** The transport added by `setFileLogging`; transports from the options are left alone. */
+  private fileTransport?: winston.transports.FileTransportInstance;
 
   /** Creates the output channel and a logger that writes to it. */
   constructor(options: ExtensionLoggerOptions) {
@@ -281,14 +322,17 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
           format: winston.format.printf(format),
           level: winstonLevel,
         }),
+        ...(options.transports ?? []),
       ],
     });
+    // Start the extra transports at the channel's level too.
+    this.transports.forEach((t) => (t.level = winstonLevel));
     this.outputChannel = outputChannel;
     this.format_ = format;
     // The channel's event covers both its own level and the global level it follows;
     // vscode.env.onDidChangeLogLevel only reports the global level.
     this.levelSubscription = outputChannel.onDidChangeLogLevel((newLevel) =>
-      setLogLevel(this, fromVscodeLogLevel(newLevel))
+      setLogLevel(this, fromVscodeLogLevel(newLevel)),
     );
     if (options.show) {
       outputChannel.show(true);
@@ -326,13 +370,12 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
    * @returns The absolute path logged to, or undefined if file logging is disabled.
    */
   setFileLogging(filepath?: string, baseDir?: string): string | undefined {
-    this.transports
-      .filter((t) => t instanceof winston.transports.File)
-      .forEach((t) => {
-        this.remove(t);
-        // remove() only unpipes the transport, so close it to release the file handle.
-        t.close?.();
-      });
+    if (this.fileTransport) {
+      this.remove(this.fileTransport);
+      // remove() only unpipes the transport, so close it to release the file handle.
+      this.fileTransport.close?.();
+      this.fileTransport = undefined;
+    }
 
     if (!filepath || filepath.trim() === "") {
       this.info("File logging disabled");
@@ -341,15 +384,14 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
 
     const base = baseDir ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
     const filename = path.resolve(base, filepath);
-    this.add(
-      new winston.transports.File({
-        filename,
-        level: this.level,
-        format: winston.format.printf(
-          (info) => `${info.timestamp ?? new Date().toISOString()} [${info.level}] ${this.format_(info)}`
-        ),
-      })
-    );
+    this.fileTransport = new winston.transports.File({
+      filename,
+      level: this.level,
+      format: winston.format.printf(
+        (info) => `${info.timestamp ?? new Date().toISOString()} [${info.level}] ${this.format_(info)}`,
+      ),
+    });
+    this.add(this.fileTransport);
     this.info(`File logging enabled\n  path: "${filename}"\n  level: "${this.level}"`);
     return filename;
   }

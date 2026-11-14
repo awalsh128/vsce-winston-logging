@@ -5,6 +5,7 @@ import * as path from "node:path";
 import * as winston from "winston";
 import {
   Benchmark,
+  DisposableBenchmark,
   defaultFormat,
   ExtensionLogger,
   fromVscodeLogLevel,
@@ -130,6 +131,40 @@ describe("vsce-winston-logging", () => {
 
       expect(channel().lines).to.deep.equal([["info", "<x>"]]);
       custom.dispose();
+    });
+
+    it("writes to extra transports and sets their level from the channel", async () => {
+      const lines: string[] = [];
+      const extra = new winston.transports.Stream({
+        stream: new (require("node:stream").Writable)({
+          write(chunk: Buffer, _enc: string, cb: () => void) {
+            lines.push(chunk.toString());
+            cb();
+          },
+        }),
+        level: "error",
+        format: winston.format.printf((info) => `extra: ${info.message}`),
+      });
+      const withExtra = new ExtensionLogger({ name: "Extra", transports: [extra] });
+
+      withExtra.info("hello");
+      await flush();
+      expect(lines).to.deep.equal(["extra: hello\n"]);
+      expect(channel().lines).to.deep.equal([["info", "hello"]]);
+
+      channel().fireLogLevel(LogLevel.Warning);
+      expect(extra.level).to.equal("warn");
+      withExtra.dispose();
+    });
+
+    it("leaves extra file transports alone when file logging changes", () => {
+      const file = new winston.transports.File({ filename: path.join(os.tmpdir(), "extra.log") });
+      const withFile = new ExtensionLogger({ name: "File", transports: [file] });
+
+      withFile.setFileLogging(undefined);
+
+      expect(withFile.transports).to.include(file);
+      withFile.dispose();
     });
 
     it("reveals the channel only when asked", () => {
@@ -260,6 +295,38 @@ describe("vsce-winston-logging", () => {
   describe("defaultFormat", () => {
     it("formats plain messages as is", () => {
       expect(defaultFormat({ level: "info", message: "hi" })).to.equal("hi");
+    });
+  });
+
+  describe("DisposableBenchmark", () => {
+    it("logs the message at the lambda's level with the delta appended", async () => {
+      logger.setLevel("debug");
+      channel().lines.length = 0;
+
+      new DisposableBenchmark(logger, () => ({ level: "debug", message: "Scan finished" })).dispose();
+      await flush();
+
+      expect(channel().lines).to.have.length(1);
+      expect(channel().lines[0][0]).to.equal("debug");
+      expect(channel().lines[0][1]).to.match(/^Scan finished \(\d+ms\)$/);
+    });
+
+    it("does nothing when the level is not enabled", async () => {
+      channel().lines.length = 0;
+
+      new DisposableBenchmark(logger, () => ({ level: "trace", message: "hidden" })).dispose();
+      await flush();
+
+      expect(channel().lines).to.be.empty;
+    });
+
+    it("does not call the lambda when the logger is silent", () => {
+      logger.setLevel("off");
+      let called = false;
+
+      new DisposableBenchmark(logger, () => ((called = true), { level: "error", message: "x" })).dispose();
+
+      expect(called).to.be.false;
     });
   });
 
