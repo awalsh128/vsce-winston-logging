@@ -74,6 +74,8 @@ level and follows it when the user changes it; a channel set to `Off` silences t
 - `show`: reveals the channel, without taking focus, when the logger is created. Off by default.
 - `format`: `(info) => string`, which formats the body of each line for the channel and the file.
   Defaults to `defaultFormat`.
+- `transports`: additional Winston transports, written to alongside the channel. They follow the
+  channel's level, are closed on `dispose()`, and use their own `format`.
 
 The levels are the `LogOutputChannel` levels, from most to least severe: `error`, `warn`, `info`,
 `debug`, and `trace`. Each has a method taking a message and optional metadata, as in Winston:
@@ -151,6 +153,19 @@ A stopwatch started when it is created. `getDelta()` returns the elapsed millise
 const benchmark = new Benchmark();
 await scan();
 logger.info(`Scan finished in ${benchmark.getDeltaAsText()}`);
+```
+
+### `DisposableBenchmark`
+
+A `Benchmark` that logs when it is disposed, such as at the end of a scope with `using`. The lambda
+returns the level and the message, and the elapsed time is appended to it. The lambda runs only on
+disposal, and only when the logger is not silent, and nothing is logged when its level is disabled.
+
+```ts
+async function scan() {
+  using _ = new DisposableBenchmark(logger, () => ({ level: "debug", message: "Scan finished" }));
+  await doScan();
+} // Logs "Scan finished (42ms)" at debug level
 ```
 
 ### Formatting
