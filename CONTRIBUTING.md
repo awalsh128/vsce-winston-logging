@@ -10,9 +10,9 @@ npm run build     # emits dist/
 
 Two git hooks run locally:
 
-| Hook         | Runs                                                                              |
-| ------------ | --------------------------------------------------------------------------------- |
-| `pre-commit` | `npm run check`                                                                   |
+| Hook         | Runs                                                                         |
+| ------------ | ---------------------------------------------------------------------------- |
+| `pre-commit` | `npm run check`                                                              |
 | `commit-msg` | [commitlint](https://commitlint.js.org) with the Conventional Commits config |
 
 ## Commits
@@ -61,16 +61,22 @@ releases are the version history.
 
 Every release is gated by CI on the exact commit being released:
 
-| Branch    | Releases                   | Example      | Started by                                       |
-| --------- | -------------------------- | ------------ | ------------------------------------------------ |
-| `staging` | Release candidates         | `1.2.0-rc.1` | The last CI job on a `staging` push, after tests |
-| `main`    | Official (stable) releases | `1.2.0`      | The promote workflow                             |
+| Branch    | Releases                   | Example      | Started by                                   |
+| --------- | -------------------------- | ------------ | -------------------------------------------- |
+| `staging` | Release candidates         | `1.2.0-rc.1` | The nightly workflow, when npm files changed |
+| `main`    | Official (stable) releases | `1.2.0`      | The promote workflow                         |
 
+- The [Nightly release candidate](.github/workflows/nightly.yml) workflow runs daily on `main`'s
+  schedule and starts `publish.yml` on `staging` only if `src/`, `package.json`,
+  `package-lock.json` or `tsconfig.build.json` changed since the last release tag. The release
+  still needs CI to have passed on `staging`'s latest commit, and semantic-release still skips it
+  when no commit since the last release calls for a version.
 - Each release candidate increments the `rc` number until the version is promoted. Candidates get a
-  tag and a GitHub prerelease, but are not published to npm.
-- Official releases publish to npm through trusted publishing, with provenance. npm trusts only
-  [publish.yml](.github/workflows/publish.yml) started on its own, which candidates are not (ci.yml
-  calls it).
+  tag, a GitHub prerelease and an npm publish under the `rc` dist-tag, so `npm install
+vsce-winston-logging` still gets the official release.
+- Releases publish to npm through trusted publishing, with provenance. npm trusts only
+  [publish.yml](.github/workflows/publish.yml) started on its own, which is how both the nightly
+  workflow and promote start it.
 - Every release builds the API docs ([typedoc.json](typedoc.json)) in semantic-release's `prepare`
   step, through `@semantic-release/exec`, so a docs failure stops the release before it is tagged.
   Only official releases deploy them to GitHub Pages; candidates and runs that release nothing
@@ -93,11 +99,11 @@ package's own dependencies.
 The workflows store no secrets. Each job exchanges its GitHub OIDC token (`id-token: write`) for
 short-lived credentials:
 
-| Credential              | Used by                                                | Issued under                                                                  |
-| ----------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| GitHub token for `main` | `promote.yml` on `staging`                             | Octo STS trust policy [promote.sts.yaml](.github/chainguard/promote.sts.yaml) |
-| GitHub token for tags   | The `semantic-release` action in `publish.yml`         | Octo STS trust policy [release.sts.yaml](.github/chainguard/release.sts.yaml) |
-| npm credentials         | `publish.yml`                                          | npm [trusted publishing](#trusted-publishing), naming the `release` environment |
+| Credential              | Used by                                        | Issued under                                                                    |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------- |
+| GitHub token for `main` | `promote.yml` on `staging`                     | Octo STS trust policy [promote.sts.yaml](.github/chainguard/promote.sts.yaml)   |
+| GitHub token for tags   | The `semantic-release` action in `publish.yml` | Octo STS trust policy [release.sts.yaml](.github/chainguard/release.sts.yaml)   |
+| npm credentials         | `publish.yml`                                  | npm [trusted publishing](#trusted-publishing), naming the `release` environment |
 
 GitHub rejects tag creation and updates to `main` by `GITHUB_TOKEN` under the rulesets, so those go
 through the [Octo STS](https://github.com/octo-sts/app) GitHub App, which mints a token when a job's

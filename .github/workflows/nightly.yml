@@ -1,0 +1,66 @@
+# Starts a nightly release candidate when staging has npm package changes since its last release.
+#
+# Candidates are published to npm under the `rc` dist-tag, so they must run publish.yml on its own:
+# npm trusted publishing trusts that workflow file started directly, not through another workflow.
+# Schedules only run on the default branch, so this runs on main and starts publish.yml on staging.
+# publish.yml still requires CI to have passed on the commit, and semantic-release still releases
+# nothing when the commits since the last release call for no version (docs, ci, chore, ...).
+name: Nightly release candidate
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write # Start the publish workflow
+    steps:
+      - name: Checkout staging
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5, Node 24
+        with:
+          ref: staging
+          fetch-depth: 0
+          persist-credentials: false
+
+      # The npm package is what `npm pack` ships: dist/, built from the sources, plus package.json
+      # and its dependencies. Anything else (docs, tests, workflows) is not an npm change.
+      - name: Look for npm changes since the last release
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          last="$(git describe --tags --abbrev=0 --match 'v*' HEAD 2>/dev/null || true)"
+          if [[ -z "$last" ]]; then
+            echo "No release yet, so everything is new."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$last" HEAD -- \
+            src package.json package-lock.json tsconfig.build.json)"
+          if [[ -z "$changed" ]]; then
+            echo "No npm changes since $last."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "npm changes since $last:"
+            echo "$changed"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Start release candidate
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh workflow run publish.yml --ref staging

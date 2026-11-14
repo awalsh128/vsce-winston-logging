@@ -1,8 +1,7 @@
 name: CI
 
 on:
-  # staging: gates release candidates, and gives the promote workflow a result for staging's exact
-  # commit. main: reports the status of each promotion.
+  # staging: gives the nightly and promote workflows a result for staging's exact commit. main: reports the status of each promotion.
   push:
     branches: [main, staging]
   pull_request:
@@ -72,16 +71,3 @@ jobs:
       # Catches packaging regressions, such as missing dist files, before a release.
       - name: Pack
         run: npm pack --dry-run
-
-  # Release candidates are only cut from staging commits that pass CI.
-  release-candidate:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/staging' }}
-    needs: test
-    permissions:
-      actions: read
-      contents: write
-      issues: write
-      pull-requests: write
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/publish.yml

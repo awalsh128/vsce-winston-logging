@@ -1,11 +1,11 @@
 name: Publish
 
 # Releases vsce-winston-logging with semantic-release, always gated by CI:
-# - staging: ci.yml calls this after CI passes, releasing a candidate (e.g. 1.2.0-rc.1) as a tag and
-#   GitHub prerelease only.
+# - staging: nightly.yml starts this when staging has npm changes, releasing a candidate
+#   (e.g. 1.2.0-rc.1) to npm under the `rc` dist-tag, as a tag and as a GitHub prerelease.
 # - main: promote.yml starts this after fast-forwarding main to a CI-passed staging commit,
 #   releasing an official version (e.g. 1.2.0) and publishing it to npm.
-# - Manual runs first require a successful CI run for the commit.
+# - Manual and nightly runs first require a successful CI run for the commit.
 #
 # No secrets: the job's OIDC token is exchanged for each credential.
 # - Tags are pushed with an Octo STS token (.github/chainguard/release.sts.yaml).
@@ -14,7 +14,6 @@ name: Publish
 #
 # See release.config.cjs and CONTRIBUTING.md#publishing.
 on:
-  workflow_call:
   workflow_dispatch:
     inputs:
       dry-run:
