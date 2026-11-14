@@ -2,7 +2,7 @@
   <img src="images/logo.png" alt="vsce-winston-logging logo" width="128" height="128">
 </p>
 
-<h1 align="center">vsce-winston-logging</h1>
+<h1 align="center">VSCE Winston Logging</h1>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/vsce-winston-logging"><img src="https://img.shields.io/npm/v/vsce-winston-logging?label=npm&color=%2314b8a6" alt="npm version"></a>
@@ -11,12 +11,19 @@
   <a href="https://github.com/awalsh128/vsce-winston-logging/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
-A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions. It writes to the
-extension's own log output channel and follows that channel's log level, so users change how much
-it logs with **Developer: Set Log Level...** or `--log=<publisher>.<name>:<level>`, without a
-restart. Lazy methods build a message only when its level is enabled, document loggers prefix each
-line with a file and line range, and lines can also go to a file. It is a normal Winston logger, so
-other transports and `child()` metadata work as usual.
+A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions.
+
+- 📺 **Output channel logging**: writes to the extension's own log output channel, with VS Code's
+  timestamps, level labels, and filtering.
+- 🎚️ **Follows the channel's level**: users change how much it logs with
+  **Developer: Set Log Level...** or `--log=<publisher>.<name>:<level>`, without a restart.
+- 💤 **Lazy logging**: lazy methods build a message only when its level is enabled, so expensive
+  messages cost nothing when they are not logged.
+- 📄 **Document loggers**: prefix each line with a workspace-relative file and line range, such as
+  `src/app.ts[3:6]: `.
+- 💾 **File logging**: lines can also go to a file, which can be changed or turned off at runtime.
+- 🧩 **Plain Winston**: it is a normal Winston logger, so other transports and `child()` metadata
+  work as usual.
 
 ```sh
 npm install vsce-winston-logging
@@ -37,11 +44,14 @@ import { ExtensionLogger } from "vsce-winston-logging";
 export let logger: ExtensionLogger;
 
 export function activate(context: vscode.ExtensionContext) {
-  logger = new ExtensionLogger({ name: "My Extension" });
+  // The extension's displayName from package.json, such as "My Extension".
+  logger = new ExtensionLogger({
+    name: context.extension.packageJSON.displayName,
+    configSection: "myExt",
+  });
   context.subscriptions.push(logger);
 
   logger.info("Activated");
-  logger.debugLazy(() => `Configuration: ${JSON.stringify(vscode.workspace.getConfiguration())}`);
 
   context.subscriptions.push(
     vscode.workspace.onDidSaveTextDocument((document) => {
@@ -59,8 +69,20 @@ The **My Extension** output channel then shows, at the default `info` level:
 2026-11-13 12:00:00.002 [warning] src/app.ts[3:6]: Block is not sorted
 ```
 
-The debug line appears, and `JSON.stringify` runs, only once the user sets the channel to `Debug`
-or `Trace`.
+At `Debug` or `Trace`, the channel also starts with the logger's options and the `myExt` settings:
+
+```text
+2026-11-13 12:00:00.000 [debug] Logger created
+  name: "My Extension"
+  level: "debug"
+  show: false
+  format: default
+  configSection: "myExt"
+2026-11-13 12:00:00.001 [debug] Settings for "myExt":
+{
+  "logFile": "logs/my-extension.log"
+}
+```
 
 ## API
 
@@ -76,6 +98,11 @@ level and follows it when the user changes it; a channel set to `Off` silences t
   Defaults to `defaultFormat`.
 - `transports`: additional Winston transports, written to alongside the channel. They follow the
   channel's level, are closed on `dispose()`, and use their own `format`.
+- `configSection`: the extension's configuration section, such as `"myExt"`. When set, the
+  section's settings are logged at `debug` level when the logger is created.
+
+At `debug` level, the logger logs its own options when it is created. Neither line is built unless
+`debug` is enabled.
 
 The levels are the `LogOutputChannel` levels, from most to least severe: `error`, `warn`, `info`,
 `debug`, and `trace`. Each has a method taking a message and optional metadata, as in Winston:

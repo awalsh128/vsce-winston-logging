@@ -79,6 +79,11 @@ export const window = {
 
 export const workspace = {
   workspaceFolders: undefined as { uri: Uri }[] | undefined,
+  /** Settings returned by getConfiguration(), keyed by section; tests may change it. */
+  settings: {} as Record<string, Record<string, unknown>>,
+  getConfiguration(section: string) {
+    return { ...workspace.settings[section], get: () => undefined, has: () => false };
+  },
   asRelativePath(uri: Uri) {
     const root = workspace.workspaceFolders?.[0]?.uri.fsPath;
     return root && uri.fsPath.startsWith(root + "/") ? uri.fsPath.slice(root.length + 1) : uri.fsPath;

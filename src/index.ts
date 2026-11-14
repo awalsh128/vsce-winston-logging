@@ -285,6 +285,10 @@ export interface ExtensionLoggerOptions {
    * format, so `format` does not apply to them.
    */
   transports?: TransportStream[];
+   * The extension's configuration section, such as `"myExt"`. When set, the section's settings are
+   * logged at debug level when the logger is created.
+   */
+  configSection?: string;
 }
 
 /**
@@ -331,6 +335,26 @@ export class ExtensionLogger extends LazyLogger implements vscode.Disposable {
     );
     if (options.show) {
       outputChannel.show(true);
+    }
+    this.logSettings(options);
+  }
+
+  /** Logs the logger's options and, when a section is given, the extension's settings. */
+  private logSettings(options: ExtensionLoggerOptions): void {
+    this.debugLazy(
+      () =>
+        `Logger created\n  name: "${options.name}"\n  level: "${this.level}"\n` +
+        `  show: ${options.show ?? false}\n  format: ${options.format ? "custom" : "default"}\n` +
+        `  configSection: ${options.configSection === undefined ? "none" : `"${options.configSection}"`}`
+    );
+    const section = options.configSection;
+    if (section) {
+      // JSON drops the configuration object's methods (get, has, inspect, update).
+      this.debugLazy(
+        () =>
+          `Settings for "${section}":\n` +
+          JSON.stringify(vscode.workspace.getConfiguration(section), null, 2)
+      );
     }
   }
 
