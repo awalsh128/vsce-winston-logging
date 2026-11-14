@@ -86,6 +86,9 @@ At `Debug` or `Trace`, the channel also starts with the logger's options and the
 
 ## API
 
+The full API reference for each release is at [awalsh128.com/vsce-winston-logging](https://awalsh128.com/vsce-winston-logging/).
+See all of my published APIs at [awalsh128.com/api](https://awalsh128.com/api/).
+
 ### `new ExtensionLogger(options)`
 
 Creates a log output channel and a logger that writes to it. The logger starts at the channel's
