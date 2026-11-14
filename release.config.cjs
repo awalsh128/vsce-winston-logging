@@ -7,7 +7,8 @@
  */
 module.exports = {
   branches: [
-    // Release candidates, such as 1.1.0-rc.1, tagged with a GitHub prerelease but not published.
+    // Release candidates, such as 1.1.0-rc.1, started nightly by nightly.yml, published to npm under
+    // the `rc` dist-tag and tagged with a GitHub prerelease.
     { name: "staging", prerelease: "rc" },
     // Official releases, such as 1.1.0, cut when promote.yml fast-forwards main to staging.
     "main",
@@ -15,10 +16,12 @@ module.exports = {
   tagFormat: "v${version}",
   plugins: [
     ["@semantic-release/commit-analyzer", { preset: "conventionalcommits" }],
-    ["@semantic-release/release-notes-generator", { preset: "conventionalcommits" }],
-    // Only main publishes: npm trusts publish.yml when it is started on its own, while candidates
-    // run it through ci.yml.
-    ["@semantic-release/npm", { npmPublish: process.env.GITHUB_REF === "refs/heads/main" }],
+    [
+      "@semantic-release/release-notes-generator",
+      { preset: "conventionalcommits" },
+    ],
+    // Publishes official releases and candidates. Dry runs and other branches never publish.
+    ["@semantic-release/npm", { npmPublish: true }],
     // Builds the API docs for the release, then reports the released version to the workflow. Runs
     // after @semantic-release/npm so the docs show the version it wrote into package.json, and in
     // `prepare` so a docs failure stops the release before it is tagged. Source links point at the
@@ -28,7 +31,8 @@ module.exports = {
     [
       "@semantic-release/exec",
       {
-        prepareCmd: "npm run -s docs:api -- --gitRevision v${nextRelease.version}",
+        prepareCmd:
+          "npm run -s docs:api -- --gitRevision v${nextRelease.version}",
         successCmd:
           'if [ -n "$GITHUB_OUTPUT" ]; then echo "version=${nextRelease.version}" >> "$GITHUB_OUTPUT"; fi',
       },
