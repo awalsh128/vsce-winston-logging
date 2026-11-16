@@ -1,13 +1,21 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": [
+    "src/index.ts"
+  ],
   "tsconfig": "tsconfig.build.json",
-  "outputs": [{ "name": "html", "path": "../../docs/api/winston-vscode" }],
+  "outputs": [
+    {
+      "name": "html",
+      "path": "../../docs/api/winston-vscode"
+    }
+  ],
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
-  "includeVersion": true,
-  "sort": ["source-order"],
+  "sort": [
+    "source-order"
+  ],
   "readme": "none",
   "gitRevision": "{branch}"
 }
