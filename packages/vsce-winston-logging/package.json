@@ -1,0 +1,48 @@
+{
+  "name": "vsce-winston-logging",
+  "version": "0.0.0-semantically-released",
+  "description": "Deprecated: renamed to @awalsh128/winston-vscode. Re-exports it so existing imports keep working.",
+  "keywords": [
+    "vscode",
+    "vscode-extension",
+    "winston",
+    "logging",
+    "logger"
+  ],
+  "license": "Apache-2.0",
+  "author": "awalsh128",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "directory": "packages/vsce-winston-logging"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "peerDependencies": {
+    "@types/vscode": ">=1.74.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/vscode": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@awalsh128/winston-vscode": "0.0.0-semantically-released"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "mocha",
+    "prepack": "npm run build"
+  }
+}

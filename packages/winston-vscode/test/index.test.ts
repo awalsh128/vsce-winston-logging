@@ -9,10 +9,14 @@ import {
   defaultFormat,
   ExtensionLogger,
   fromVscodeLogLevel,
+  LazyLogger,
   logAndGetError,
+  OutputChannelTransport,
   rangeText,
   setLogLevel,
+  toLocation,
 } from "../src";
+import * as host from "@awalsh128/winston-host";
 import { LogLevel, Range, state, Uri, workspace } from "./vscode-stub";
 
 /** Lets the transports flush, since winston writes asynchronously. */
@@ -283,12 +287,47 @@ describe("vsce-winston-logging", () => {
     });
   });
 
-  describe("rangeText", () => {
-    it("formats ranges as 1-based lines", () => {
-      expect(rangeText()).to.equal("");
-      expect(rangeText(new Range(4, 0, 4, 9) as never)).to.equal("[5]");
-      expect(rangeText(new Range(4, 0, 0, 0) as never)).to.equal("[5]");
-      expect(rangeText(new Range(4, 0, 8, 0) as never)).to.equal("[5:8]");
+  describe("toLocation", () => {
+    const at = (range?: Range) => toLocation(Uri.file("/ws/a.ts") as never, range as never);
+
+    it("converts ranges to 1-based lines, as rangeText formats them", () => {
+      workspace.workspaceFolders = [{ uri: Uri.file("/ws") }];
+
+      expect(at()).to.deep.equal({ path: "a.ts" });
+      expect(rangeText(at())).to.equal("");
+      expect(rangeText(at(new Range(4, 0, 4, 9)))).to.equal("[5]");
+      expect(rangeText(at(new Range(4, 0, 0, 0)))).to.equal("[5]");
+      expect(rangeText(at(new Range(4, 0, 8, 0)))).to.equal("[5:8]");
+    });
+  });
+
+  describe("shared base", () => {
+    it("is re-exported, so existing imports keep working", () => {
+      expect(LazyLogger).to.equal(host.LazyLogger);
+      expect(logger).to.be.instanceOf(host.HostLogger);
+    });
+  });
+
+  describe("OutputChannelTransport", () => {
+    it("writes formatted lines to the channel", async () => {
+      const ch = new (require("./vscode-stub").FakeLogOutputChannel)("T", LogLevel.Info);
+      const transport = new OutputChannelTransport({ outputChannel: ch, format: winston.format.simple() });
+      const plain = winston.createLogger({ transports: [transport] });
+      plain.info("direct");
+      await flush();
+
+      expect(ch.lines).to.deep.equal([["info", "info: direct"]]);
+    });
+  });
+
+  describe("mapLevel", () => {
+    it("replaces the level mapping", async () => {
+      state.initialLevel = LogLevel.Error;
+      const mapped = new ExtensionLogger({ name: "Mapped", mapLevel: () => "trace" });
+      expect(mapped.level).to.equal("trace");
+      channel().fireLogLevel(LogLevel.Off);
+      expect(mapped.silent).to.be.false;
+      mapped.dispose();
     });
   });
 

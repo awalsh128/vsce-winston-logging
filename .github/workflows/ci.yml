@@ -59,15 +59,19 @@ jobs:
           create_pr_comments: false
           create_issues: false
 
+      # Packages import each other through their dist/, so everything builds first.
+      - name: Build
+        run: npm run build
+
       - name: Typecheck
         run: npm run typecheck
 
       - name: Unit tests
         run: npm test
 
-      - name: Build
-        run: npm run build
+      - name: API docs
+        run: npm run docs:api
 
       # Catches packaging regressions, such as missing dist files, before a release.
       - name: Pack
-        run: npm pack --dry-run
+        run: npm pack --dry-run --workspaces

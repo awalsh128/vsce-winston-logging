@@ -1,59 +1,33 @@
 {
-  "name": "vsce-winston-logging",
-  "version": "0.0.0-semantically-released",
-  "description": "Customized Winston logger for VS Code extensions, writing to a LogOutputChannel with lazy logging support.",
-  "keywords": [
-    "vscode",
-    "vscode-extension",
-    "winston",
-    "logging",
-    "logger"
-  ],
+  "name": "vsce-winston-logging-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Winston logging adapters for VS Code, GitHub Actions and other hosts.",
   "license": "Apache-2.0",
   "author": "awalsh128",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git"
+    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "directory": "packages/vsce-winston-logging"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
+  "workspaces": [
+    "packages/winston-host",
+    "packages/winston-vscode",
+    "packages/winston-github-actions",
+    "packages/vsce-winston-logging"
   ],
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "scripts": {
     "prepare": "husky",
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "mocha",
-    "check": "npm run typecheck && npm test",
-    "docs:api": "typedoc --options typedoc.json",
-    "prepack": "npm run build"
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "check": "npm run build && npm run typecheck && npm test",
+    "docs:api": "npm run docs:api --workspaces --if-present && node scripts/docs-index.mjs"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "engines": {
-    "vscode": "^1.74.0"
-  },
-  "peerDependencies": {
-    "@types/vscode": ">=1.74.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/vscode": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "logform": "^2.7.0",
-    "triple-beam": "^1.4.1",
-    "winston": "^3.19.0",
-    "winston-transport": "^4.9.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
