@@ -1,10 +1,10 @@
 name: Publish
 
-# Releases vsce-winston-logging, always gated by CI:
+# Releases each package of this repository independently, always gated by CI:
 # - staging: nightly.yml starts this when staging has npm changes, releasing a candidate
-#   (e.g. 1.2.0-rc.1) to npm under the `rc` dist-tag, as a tag and as a GitHub prerelease.
+#   (e.g. winston-host-v1.2.0-rc.1) to npm under the `rc` dist-tag, as a tag and as a GitHub prerelease.
 # - main: promote.yml starts this after fast-forwarding main to a CI-passed staging commit,
-#   releasing an official version (e.g. 1.2.0) and publishing it to npm.
+#   releasing an official version (e.g. winston-host-v1.2.0) and publishing it to npm.
 # - Manual and nightly runs first require a successful CI run for the commit.
 #
 # No secrets: the job's OIDC token is exchanged for each credential.
@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 20
     environment: release
     outputs:
-      version: ${{ steps.release.outputs.version }} # Empty when nothing was released
+      released: ${{ steps.released.outputs.any }} # "true" when an official release should update the docs
     # One release per branch at a time; never cancel one that is tagging.
     concurrency:
       group: release-${{ github.ref }}
@@ -73,29 +73,93 @@ jobs:
           scope: ${{ github.repository }}
           identity: release
 
-      # Checks the release preconditions, then runs semantic-release with the action's config: tag,
-      # GitHub Release and npm publish (main and staging). It also builds the API docs and sets the
-      # `version` output when it releases.
-      # baseline-commit is the last commit without a Conventional Commit message (the initial import), which
-      # predates every release tag, so it never affected versioning; it only keeps the commit-messages check
-      # from failing on it.
-      - name: Release
-        id: release
-        uses: awalsh128/npm-publish-strict@6b3ccbe846675e5594d81d48fc5c9f0a461a080e # v1.0.0
+      # Packages import each other through their dist/, so all of them build before any is released.
+      # npm publish builds the package again through its prepack script.
+      - name: Build
+        run: npm run build
+
+      # Each package is released on its own: its tag format, the commits that touch it, and its
+      # internal dependencies pinned to their latest releases. Order follows the dependencies, so a
+      # package never publishes before what it depends on, and a failure stops the rest.
+      # Each step checks the release preconditions, then runs semantic-release with the action's
+      # config: tag, GitHub Release and npm publish (main and staging). It sets the `version` output
+      # when it releases. baseline-commit is the last commit without a Conventional Commit message
+      # (the initial import), which predates every release tag, so it never affected versioning; it
+      # only keeps the commit-messages check from failing on it.
+      #
+      # TODO: the pinned SHA below is a placeholder. The tag-format, commit-paths and pin-dependencies
+      # inputs are not in a released npm-publish-strict yet; pin the release that adds them.
+      - name: Release winston-host
+        id: host
+        uses: awalsh128/npm-publish-strict@0000000000000000000000000000000000000000 # unreleased: independent releases
         with:
+          working-directory: packages/winston-host
+          tag-format: winston-host-v${version}
+          commit-paths: packages/winston-host
           dry-run: ${{ inputs.dry-run || 'false' }}
           baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
           git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
           github-token: ${{ github.token }}
 
-      # Only official releases update the docs site. Dry runs and runs that release nothing leave
-      # the `version` output empty.
+      - name: Release winston-vscode
+        id: vscode
+        uses: awalsh128/npm-publish-strict@0000000000000000000000000000000000000000 # unreleased: independent releases
+        with:
+          working-directory: packages/winston-vscode
+          tag-format: winston-vscode-v${version}
+          commit-paths: packages/winston-vscode
+          pin-dependencies: "@awalsh128/winston-host=winston-host-v${version}"
+          dry-run: ${{ inputs.dry-run || 'false' }}
+          baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
+          git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
+          github-token: ${{ github.token }}
+
+      - name: Release winston-github-actions
+        id: actions
+        uses: awalsh128/npm-publish-strict@0000000000000000000000000000000000000000 # unreleased: independent releases
+        with:
+          working-directory: packages/winston-github-actions
+          tag-format: winston-github-actions-v${version}
+          commit-paths: packages/winston-github-actions
+          pin-dependencies: "@awalsh128/winston-host=winston-host-v${version}"
+          dry-run: ${{ inputs.dry-run || 'false' }}
+          baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
+          git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
+          github-token: ${{ github.token }}
+
+      # The deprecated name keeps its v* tags, so it continues from 1.1.0.
+      - name: Release vsce-winston-logging
+        id: shim
+        uses: awalsh128/npm-publish-strict@0000000000000000000000000000000000000000 # unreleased: independent releases
+        with:
+          working-directory: packages/vsce-winston-logging
+          commit-paths: packages/vsce-winston-logging
+          pin-dependencies: "@awalsh128/winston-vscode=winston-vscode-v${version}"
+          dry-run: ${{ inputs.dry-run || 'false' }}
+          baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
+          git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
+          github-token: ${{ github.token }}
+
+      # Only official releases update the docs site, which covers every package, so it is rebuilt
+      # whole instead of from the package that released. Dry runs and runs that release nothing
+      # leave every `version` output empty.
+      - name: Check for official releases
+        id: released
+        if: ${{ github.ref == 'refs/heads/main' }}
+        env:
+          VERSIONS: ${{ steps.host.outputs.version }}${{ steps.vscode.outputs.version }}${{ steps.actions.outputs.version }}${{ steps.shim.outputs.version }}
+        run: echo "any=$([[ -n "$VERSIONS" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Build API docs
+        if: ${{ steps.released.outputs.any == 'true' }}
+        run: npm run docs:api
+
       - name: Setup Pages
-        if: ${{ github.ref == 'refs/heads/main' && steps.release.outputs.version != '' }}
+        if: ${{ steps.released.outputs.any == 'true' }}
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Upload Pages artifact
-        if: ${{ github.ref == 'refs/heads/main' && steps.release.outputs.version != '' }}
+        if: ${{ steps.released.outputs.any == 'true' }}
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: docs/api
@@ -104,7 +168,7 @@ jobs:
   # and only allows main. The release job can't use it because it also runs on staging.
   deploy-pages:
     needs: release
-    if: ${{ github.ref == 'refs/heads/main' && needs.release.outputs.version != '' }}
+    if: ${{ github.ref == 'refs/heads/main' && needs.release.outputs.released == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     concurrency:

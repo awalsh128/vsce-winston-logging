@@ -73,12 +73,31 @@ releases are the version history.
 
 ### Publishing
 
+Each package is versioned and released on its own, from the Conventional Commits that touch its
+directory. `publish.yml` runs
+[npm-publish-strict](https://github.com/awalsh128/npm-publish-strict) once per package, in
+dependency order, with the package's `working-directory`, `tag-format`, `commit-paths` and
+`pin-dependencies`:
+
+| Package                  | Tags                          | Depends on (pinned at release)  |
+| ------------------------ | ----------------------------- | ------------------------------- |
+| `winston-host`           | `winston-host-vX.Y.Z`         |                                 |
+| `winston-vscode`         | `winston-vscode-vX.Y.Z`       | `winston-host`                  |
+| `winston-github-actions` | `winston-github-actions-vX.Y.Z` | `winston-host`                |
+| `vsce-winston-logging`   | `vX.Y.Z` (its original tags)  | `winston-vscode`                |
+
+- Packages keep the placeholder version, and internal dependencies keep the placeholder too. At
+  release, each internal dependency becomes `^` and the latest released version of that package, in
+  the CI workspace only.
+- A change to `winston-host` does not release the adapters. Release them with a commit of their own
+  when they should pick up the new base; their `^` range already accepts compatible versions.
+- The first release of each package, and of each new package name, is published by hand so the
+  package exists on npm, and then given a trusted publisher (see
+  [Trusted Publishing](#trusted-publishing)). The release fails on a package until that is set.
+
 > [!WARNING]
-> Releasing the workspace packages is not wired up yet. `npm-publish-strict` releases one package
-> per run with `vX.Y.Z` tags, which does not fit several packages in one repository, and
-> `publish.yml` still runs from the repository root, whose package is private. Decide how to
-> version and tag the packages (lockstep or independent) before the next release; the text below
-> describes the single-package flow.
+> `publish.yml` pins `npm-publish-strict` to a placeholder SHA, because the inputs it uses are not
+> in a released version of the action yet. Replace it with the release that adds them.
 
 Every release is gated by CI on the exact commit being released:
 
@@ -98,7 +117,7 @@ vsce-winston-logging` still gets the official release.
 - Releases publish to npm through trusted publishing, with provenance. npm trusts only
   [publish.yml](.github/workflows/publish.yml) started on its own, which is how both the nightly
   workflow and promote start it.
-- Every release builds the API docs (each package's `typedoc.json`) in semantic-release's `prepare`
+- Every release builds the API docs (each package's `typedoc.json`; the docs site is rebuilt whole) in semantic-release's `prepare`
   step, through `@semantic-release/exec`, so a docs failure stops the release before it is tagged.
   Only official releases deploy them to GitHub Pages; candidates and runs that release nothing
   leave the site unchanged. Pages must be set to deploy from GitHub Actions, and the `github-pages`

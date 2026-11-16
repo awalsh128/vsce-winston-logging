@@ -35,29 +35,42 @@ jobs:
           persist-credentials: false
 
       # The npm packages are what `npm pack` ships: dist/, built from each package's sources, plus
-      # its package.json and dependencies. Anything else (docs, tests, workflows) is not an npm change.
-      - name: Look for npm changes since the last release
+      # its package.json and dependencies. Anything else (docs, tests, workflows) is not an npm
+      # change. Each package is compared with its own last release tag; the shared lockfile and
+      # tsconfig.base.json count for every package. publish.yml still releases nothing for a package
+      # whose commits call for no version.
+      - name: Look for npm changes since each package's last release
         id: changes
         shell: bash
         run: |
           set -euo pipefail
-          last="$(git describe --tags --abbrev=0 --match 'v*' HEAD 2>/dev/null || true)"
-          if [[ -z "$last" ]]; then
-            echo "No release yet, so everything is new."
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          changed="$(git diff --name-only "$last" HEAD -- \
-            packages ':!packages/*/test' ':!packages/*/README.md' \
-            package.json package-lock.json tsconfig.base.json)"
-          if [[ -z "$changed" ]]; then
-            echo "No npm changes since $last."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "npm changes since $last:"
-            echo "$changed"
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+          changed=false
+          # package directory:tag pattern (the deprecated name keeps its plain v* tags)
+          for entry in \
+            "winston-host:winston-host-v*" \
+            "winston-vscode:winston-vscode-v*" \
+            "winston-github-actions:winston-github-actions-v*" \
+            "vsce-winston-logging:v*"; do
+            package="${entry%%:*}"
+            pattern="${entry#*:}"
+            last="$(git describe --tags --abbrev=0 --match "$pattern" HEAD 2>/dev/null || true)"
+            if [[ -z "$last" ]]; then
+              echo "$package: no release yet, so everything is new."
+              changed=true
+              continue
+            fi
+            files="$(git diff --name-only "$last" HEAD -- \
+              "packages/$package" ":!packages/$package/test" ":!packages/$package/README.md" \
+              package.json package-lock.json tsconfig.base.json)"
+            if [[ -z "$files" ]]; then
+              echo "$package: no npm changes since $last."
+            else
+              echo "$package: npm changes since $last:"
+              echo "$files"
+              changed=true
+            fi
+          done
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
 
       - name: Start release candidate
         if: ${{ steps.changes.outputs.changed == 'true' }}
