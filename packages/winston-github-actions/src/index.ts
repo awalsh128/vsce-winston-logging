@@ -3,3 +3,4 @@ export * from "@awalsh128/winston-host";
 export * from "./core";
 export * from "./logger";
 export * from "./sink";
+export * from "./check-run";
