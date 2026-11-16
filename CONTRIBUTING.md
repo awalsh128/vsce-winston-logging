@@ -95,10 +95,6 @@ dependency order, with the package's `working-directory`, `tag-format`, `commit-
   package exists on npm, and then given a trusted publisher (see
   [Trusted Publishing](#trusted-publishing)). The release fails on a package until that is set.
 
-> [!WARNING]
-> `publish.yml` pins `npm-publish-strict` to a placeholder SHA, because the inputs it uses are not
-> in a released version of the action yet. Replace it with the release that adds them.
-
 Every release is gated by CI on the exact commit being released:
 
 | Branch    | Releases                   | Example      | Started by                                   |
