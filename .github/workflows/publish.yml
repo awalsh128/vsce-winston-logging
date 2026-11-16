@@ -87,11 +87,11 @@ jobs:
       # (the initial import), which predates every release tag, so it never affected versioning; it
       # only keeps the commit-messages check from failing on it.
       #
-      # The action is pinned to the release candidate that adds the tag-format, commit-paths and
-      # pin-dependencies inputs. Move it to v1.1.0 once that is promoted.
+      # The action is pinned to v1.1.0, the first release with the tag-format, commit-paths and
+      # pin-dependencies inputs.
       - name: Release winston-host
         id: host
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0-rc.1
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
         with:
           working-directory: packages/winston-host
           tag-format: winston-host-v${version}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Release winston-vscode
         id: vscode
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0-rc.1
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
         with:
           working-directory: packages/winston-vscode
           tag-format: winston-vscode-v${version}
@@ -116,7 +116,7 @@ jobs:
 
       - name: Release winston-github-actions
         id: actions
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0-rc.1
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
         with:
           working-directory: packages/winston-github-actions
           tag-format: winston-github-actions-v${version}
@@ -130,7 +130,7 @@ jobs:
       # The deprecated name keeps its v* tags, so it continues from 1.1.0.
       - name: Release vsce-winston-logging
         id: shim
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0-rc.1
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
         with:
           working-directory: packages/vsce-winston-logging
           commit-paths: packages/vsce-winston-logging
