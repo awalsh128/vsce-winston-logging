@@ -1,0 +1,40 @@
+{
+  "name": "@awalsh128/winston-host",
+  "version": "0.0.0-semantically-released",
+  "description": "Host-agnostic Winston logger with lazy logging, benchmarks and a small host interface. Unofficial; not affiliated with Winston.",
+  "keywords": [
+    "winston",
+    "logging",
+    "logger",
+    "lazy-logging"
+  ],
+  "license": "Apache-2.0",
+  "author": "awalsh128",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "directory": "packages/winston-host"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "logform": "^2.7.0",
+    "triple-beam": "^1.4.1",
+    "winston": "^3.19.0",
+    "winston-transport": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "mocha",
+    "docs:api": "typedoc --options typedoc.json",
+    "prepack": "npm run build"
+  }
+}
