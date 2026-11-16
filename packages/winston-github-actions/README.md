@@ -9,6 +9,7 @@ extension of Winston, not affiliated with the Winston project.
 - 🐞 **Follows the runner's debug setting**: `RUNNER_DEBUG` or `ACTIONS_STEP_DEBUG` turns on `debug`
   and `trace`, with no level to set by hand.
 - 📂 **Groups**: wraps work in a collapsible group and logs how long it took.
+- 🧮 **Unlimited annotations**: an optional Octokit transport reports them through the Checks API.
 - 🔒 **Secret masking**: `maskSecret()` calls `core.setSecret`.
 
 ## Quick Start
@@ -55,6 +56,38 @@ logger.maskSecret(token); // the runner masks it in the workflow log from now on
 
 Groups don't nest in a workflow log, so a group started inside another only logs its time.
 `maskSecret` is the runner's masking of the workflow log; other transports you add are not masked.
+
+## Annotations beyond the limit
+
+Workflow commands show at most 10 errors and 10 warnings per step. `CheckRunTransport` collects
+errors and warnings that have a location, and reports them all as one check run through the
+[Checks API](https://docs.github.com/rest/checks/runs), 50 annotations per request, so they show on
+the pull request's diff. Pass it an Octokit, such as `getOctokit` from
+[`@actions/github`](https://github.com/actions/toolkit/tree/main/packages/github) (8.x; 9.x is
+ESM-only). The package itself needs no Octokit dependency.
+
+```ts
+import * as github from "@actions/github";
+import { ActionsLogger, CheckRunTransport } from "@awalsh128/winston-github-actions";
+
+const checkRun = new CheckRunTransport({ octokit: github.getOctokit(token) });
+const logger = new ActionsLogger({ transports: [checkRun] });
+
+logger.forLocation({ path: "src/app.ts", line: 3 }).error("Block is not sorted");
+await checkRun.flush(); // one check run with every collected annotation
+```
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `octokit` | required | An Octokit with the Checks API |
+| `target` | `targetFromEnv()` | `{ owner, repo, sha }`; reads `GITHUB_REPOSITORY`, and a pull request's head commit or `GITHUB_SHA` |
+| `name` | `Log annotations` | The check run's name |
+| `conclusion` | `neutral` | How it concludes; `neutral` keeps logged errors from failing the commit's checks |
+
+> [!IMPORTANT]
+> The job needs `permissions: checks: write`. Pull requests from forks get a read-only token, so
+> `flush()` fails there. Lines without a location, and levels other than `error` and `warn`, are
+> not annotated; they still go to the workflow log.
 
 ## Requirements
 
