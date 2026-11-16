@@ -1,0 +1,52 @@
+{
+  "name": "vsce-winston-logging",
+  "version": "0.0.0-semantically-released",
+  "description": "Customized Winston logger for VS Code extensions, writing to a LogOutputChannel with lazy logging support.",
+  "keywords": [
+    "vscode",
+    "vscode-extension",
+    "winston",
+    "logging",
+    "logger"
+  ],
+  "license": "Apache-2.0",
+  "author": "awalsh128",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "directory": "packages/vsce-winston-logging"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "peerDependencies": {
+    "@types/vscode": ">=1.74.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/vscode": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "logform": "^2.7.0",
+    "triple-beam": "^1.4.1",
+    "winston": "^3.19.0",
+    "winston-transport": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "mocha",
+    "docs:api": "typedoc --options typedoc.json",
+    "prepack": "npm run build"
+  }
+}

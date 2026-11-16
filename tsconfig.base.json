@@ -8,8 +8,6 @@
     "skipLibCheck": true,
     "declaration": true,
     "sourceMap": true,
-    "outDir": "dist",
-    "types": ["node", "mocha"]
-  },
-  "include": ["src", "test"]
+    "outDir": "dist"
+  }
 }
