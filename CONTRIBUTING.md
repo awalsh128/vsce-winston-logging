@@ -33,10 +33,10 @@ lints the title.
 
 ## Releases
 
-Releases are made by [semantic-release](https://semantic-release.gitbook.io) from
-[release.config.cjs](release.config.cjs), with `vX.Y.Z` tags.
+Releases are made by [npm-publish-strict](https://github.com/awalsh128/npm-publish-strict), which
+runs [semantic-release](https://semantic-release.gitbook.io) with its own config, with `vX.Y.Z` tags.
 
-Releases never commit. The committed `package.json` keeps the placeholder version `0.0.0`, and
+Releases never commit. The committed `package.json` keeps the placeholder version `0.0.0-semantically-released`, and
 semantic-release writes the real version into it in the CI workspace only. The tags and GitHub
 releases are the version history.
 
@@ -90,20 +90,18 @@ vsce-winston-logging` still gets the official release.
   ```
 
 Release jobs install dependencies with `--ignore-scripts`, because they can mint registry and GitHub
-tokens. The release tools are locked in
-[.github/actions/semantic-release](.github/actions/semantic-release/package.json), apart from the
-package's own dependencies.
+tokens. The release tools are locked by the pinned npm-publish-strict version.
 
 ### Release Credentials
 
 The workflows store no secrets. Each job exchanges its GitHub OIDC token (`id-token: write`) for
 short-lived credentials:
 
-| Credential              | Used by                                        | Issued under                                                                    |
-| ----------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| GitHub token for `main` | `promote.yml` on `staging`                     | Octo STS trust policy [promote.sts.yaml](.github/chainguard/promote.sts.yaml)   |
-| GitHub token for tags   | The `semantic-release` action in `publish.yml` | Octo STS trust policy [release.sts.yaml](.github/chainguard/release.sts.yaml)   |
-| npm credentials         | `publish.yml`                                  | npm [trusted publishing](#trusted-publishing), naming the `release` environment |
+| Credential              | Used by                                      | Issued under                                                                    |
+| ----------------------- | -------------------------------------------- | ------------------------------------------------------------------------------- |
+| GitHub token for `main` | `promote.yml` on `staging`                   | Octo STS trust policy [promote.sts.yaml](.github/chainguard/promote.sts.yaml)   |
+| GitHub token for tags   | The `Create tag token` step in `publish.yml` | Octo STS trust policy [release.sts.yaml](.github/chainguard/release.sts.yaml)   |
+| npm credentials         | `publish.yml`                                | npm [trusted publishing](#trusted-publishing), naming the `release` environment |
 
 GitHub rejects tag creation and updates to `main` by `GITHUB_TOKEN` under the rulesets, so those go
 through the [Octo STS](https://github.com/octo-sts/app) GitHub App, which mints a token when a job's
@@ -127,7 +125,7 @@ npmjs.com must list this repository, `publish.yml` and the `release` environment
 publisher. Trusted publishers are set on an existing package, so the first version is published by
 hand.
 
-Run a dry run of `publish.yml` after changing `release.config.cjs`. A dry run checks the
+Run a dry run of `publish.yml` after changing it or the pinned action version. A dry run checks the
 configuration but does not publish.
 
 ## License
