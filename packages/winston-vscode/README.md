@@ -132,13 +132,20 @@ logger.trace("Entering resolve()");
 
 ### Lazy logging
 
-`errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, and `traceLazy` take a function that builds the
-message, and call it only when the level is enabled, so expensive messages cost nothing when they
-are not logged. `logLazy(level, getMessage)` takes the level as an argument.
+Level methods take a function as the message and call it only when the level is enabled, so
+expensive messages cost nothing when they are not logged. Anything after the function is metadata.
+`errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, and `traceLazy` do the same with a function that
+returns a string, and `logLazy(level, getMessage)` takes the level as an argument.
 
 ```ts
-logger.traceLazy(() => `Response:\n${JSON.stringify(response, null, 2)}`);
+logger.trace(() => `Response:\n${JSON.stringify(response, null, 2)}`);
+logger.debug(() => buildMessage(), { requestId });
+logger.traceLazy(() => `Response:\n${JSON.stringify(response, null, 2)}`); // the same
 ```
+
+The function form is [Winston PR #2626](https://github.com/winstonjs/winston/pull/2626). See
+[`@awalsh128/winston-host`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-host#lazy-logging)
+for how this package supplies it until Winston does.
 
 The lazy methods are on `LazyLogger`, which `ExtensionLogger` extends, so loggers from
 `forDocument()` and `child()` have them too.

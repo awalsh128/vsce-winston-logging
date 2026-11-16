@@ -15,7 +15,7 @@ which re-export this package.
 | --- | --- |
 | `Host`, `HostSink` | What an adapter implements: where lines go, the host's level, level changes, disposal. |
 | `HostLogger`, `HostTransport` | The Winston logger and transport that use a `Host`. `forLocation(location)` makes a child logger. |
-| `LazyLogger` | Winston logger with `errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, `traceLazy` and `logLazy`. Self-contained in `lazy.ts`. |
+| `LazyLogger` | Winston logger whose level methods take a function as the message, plus the `errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, `traceLazy` and `logLazy` aliases. Self-contained in `lazy.ts`. |
 | `LogLevel`, `LOG_LEVELS` | `error`, `warn`, `info`, `debug`, `trace`. |
 | `Location` | `{ path, line?, endLine?, column? }`, the host-neutral place a message is about. |
 | `defaultFormat`, `plainFormat`, `toLogText`, `rangeText` | Message formatting. |
@@ -31,6 +31,34 @@ const host: Host = {
 };
 new HostLogger(host).infoLazy(() => "ready");
 ```
+
+## Lazy logging
+
+Level methods take a function as the message and call it only when the level is enabled, so an
+expensive message costs nothing when it is not logged. The function's result is the message, and
+anything after it is metadata:
+
+```ts
+logger.debug(() => `Response:\n${JSON.stringify(response, null, 2)}`);
+logger.debug(() => buildMessage(), { requestId });
+logger.debugLazy(() => buildMessage()); // the same, for a function that returns a string
+```
+
+This is the API of [Winston PR #2626](https://github.com/winstonjs/winston/pull/2626), which is not
+in a Winston release yet, so this package supplies it:
+
+- **At compile time**, importing this package augments Winston's `LeveledLogMethod` type, so
+  `logger.debug(() => message, meta)` type-checks. It applies to every `winston.Logger` in the
+  program, but only a `LazyLogger` (and so a `HostLogger`) runs the function at run time. A plain
+  `winston.createLogger()` logger on a released Winston does not.
+- **At run time**, `LazyLogger` calls the function itself. When the installed Winston already has
+  the feature, `usesNativeLazy()` is `true` and a lone function goes to Winston's own level method.
+  A function followed by metadata always uses this package's code, because the PR's first version
+  drops that metadata. Detection logs a throwaway line through a probe logger once, and relies on
+  the level methods being on the prototype of the logger `createLogger` returns.
+
+A logger that is silent (level `off`) never calls the function. All of this is in `lazy.ts`, so it
+can be dropped when Winston ships the feature.
 
 ## Requirements
 

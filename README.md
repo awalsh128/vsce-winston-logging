@@ -15,7 +15,7 @@ extensions, GitHub Actions workflows, or any host you give a small adapter to.
 > [!NOTE]
 > This is an unofficial extension of Winston and is not affiliated with the Winston project.
 
-- 💤 **Lazy logging**: lazy methods build a message only when its level is enabled.
+- 💤 **Lazy logging**: `logger.debug(() => message)` builds a message only when its level is enabled.
 - 🔌 **One small host interface**: a sink, the host's level, and a dispose hook. An adapter is about
   a page of code.
 - 🎚️ **Follows the host's level**: a VS Code output channel's level, or the runner's debug setting.
