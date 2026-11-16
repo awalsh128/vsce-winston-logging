@@ -1,6 +1,6 @@
 name: Publish
 
-# Releases vsce-winston-logging with semantic-release, always gated by CI:
+# Releases vsce-winston-logging, always gated by CI:
 # - staging: nightly.yml starts this when staging has npm changes, releasing a candidate
 #   (e.g. 1.2.0-rc.1) to npm under the `rc` dist-tag, as a tag and as a GitHub prerelease.
 # - main: promote.yml starts this after fast-forwarding main to a CI-passed staging commit,
@@ -12,7 +12,8 @@ name: Publish
 # - npm trusted publishing is bound to this workflow file and the 'release' environment, which only
 #   main and staging can use.
 #
-# See release.config.cjs and CONTRIBUTING.md#publishing.
+# Runs awalsh128/npm-publish-strict, which checks the release preconditions and bundles the
+# semantic-release config. See CONTRIBUTING.md#publishing.
 on:
   workflow_dispatch:
     inputs:
@@ -63,14 +64,29 @@ jobs:
         with:
           ignore-scripts: true
 
-      # Also builds the API docs (see release.config.cjs) and sets the `version` output when it
-      # releases.
+      # GitHub rejects tag creation by GITHUB_TOKEN under the rulesets, so tags are pushed with an
+      # Octo STS token (.github/chainguard/release.sts.yaml).
+      - name: Create tag token
+        id: octo-sts
+        uses: octo-sts/action@f603d3be9d8dd9871a265776e625a27b00effe05 # v1.1.1
+        with:
+          scope: ${{ github.repository }}
+          identity: release
+
+      # Checks the release preconditions, then runs semantic-release with the action's config: tag,
+      # GitHub Release and npm publish (main and staging). It also builds the API docs and sets the
+      # `version` output when it releases.
+      # baseline-commit is the last commit without a Conventional Commit message (the initial import), which
+      # predates every release tag, so it never affected versioning; it only keeps the commit-messages check
+      # from failing on it.
       - name: Release
         id: release
-        uses: ./.github/actions/semantic-release
+        uses: awalsh128/npm-publish-strict@6b3ccbe846675e5594d81d48fc5c9f0a461a080e # v1.0.0
         with:
-          working-directory: .
-          dry-run: ${{ inputs.dry-run || false }}
+          dry-run: ${{ inputs.dry-run || 'false' }}
+          baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
+          git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
+          github-token: ${{ github.token }}
 
       # Only official releases update the docs site. Dry runs and runs that release nothing leave
       # the `version` output empty.
