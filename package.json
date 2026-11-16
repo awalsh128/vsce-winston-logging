@@ -11,14 +11,16 @@
     "directory": "packages/vsce-winston-logging"
   },
   "workspaces": [
-    "packages/*"
+    "packages/winston-host",
+    "packages/winston-vscode",
+    "packages/vsce-winston-logging"
   ],
   "scripts": {
     "prepare": "husky",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
-    "check": "npm run typecheck && npm test",
+    "check": "npm run build && npm run typecheck && npm test",
     "docs:api": "npm run docs:api --workspaces --if-present"
   },
   "commitlint": {
