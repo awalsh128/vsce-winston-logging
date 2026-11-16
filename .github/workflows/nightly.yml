@@ -34,8 +34,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # The npm package is what `npm pack` ships: dist/, built from the sources, plus package.json
-      # and its dependencies. Anything else (docs, tests, workflows) is not an npm change.
+      # The npm packages are what `npm pack` ships: dist/, built from each package's sources, plus
+      # its package.json and dependencies. Anything else (docs, tests, workflows) is not an npm change.
       - name: Look for npm changes since the last release
         id: changes
         shell: bash
@@ -48,7 +48,8 @@ jobs:
             exit 0
           fi
           changed="$(git diff --name-only "$last" HEAD -- \
-            src package.json package-lock.json tsconfig.build.json)"
+            packages ':!packages/*/test' ':!packages/*/README.md' \
+            package.json package-lock.json tsconfig.base.json)"
           if [[ -z "$changed" ]]; then
             echo "No npm changes since $last."
             echo "changed=false" >> "$GITHUB_OUTPUT"

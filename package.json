@@ -22,7 +22,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
     "check": "npm run build && npm run typecheck && npm test",
-    "docs:api": "npm run docs:api --workspaces --if-present"
+    "docs:api": "npm run docs:api --workspaces --if-present && node scripts/docs-index.mjs"
   },
   "commitlint": {
     "extends": [

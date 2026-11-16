@@ -33,8 +33,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "mocha",
-    "docs:api": "typedoc --options typedoc.json",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "docs:api": "typedoc --options typedoc.json"
   },
   "peerDependencies": {
     "@actions/core": ">=1.10.0 <3"

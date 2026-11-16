@@ -1,8 +1,0 @@
-{
-  "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/index.ts"],
-  "outputs": [{ "name": "html", "path": "./docs/api" }],
-  "tsconfig": "tsconfig.build.json",
-  "excludeInternal": true,
-  "readme": "none"
-}

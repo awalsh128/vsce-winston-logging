@@ -4,9 +4,23 @@
 
 ```sh
 npm install       # also installs the husky git hooks through the prepare script
-npm run check     # typecheck and unit tests
-npm run build     # emits dist/
+npm run check     # build, typecheck and unit tests for every package
+npm run build     # emits dist/ in each package
+npm run docs:api  # builds the API docs into docs/api
 ```
+
+This is an npm workspaces monorepo. Package builds depend on each other's `dist/`, so the
+workspaces are listed in dependency order in the root `package.json`, and `check` builds before it
+typechecks and tests.
+
+| Package                                                         | What it is                                                  |
+| --------------------------------------------------------------- | ----------------------------------------------------------- |
+| [`winston-host`](packages/winston-host)                         | Shared base. Depends only on Winston; never imports `vscode` |
+| [`winston-vscode`](packages/winston-vscode)                     | VS Code adapter; re-exports the base                         |
+| [`winston-github-actions`](packages/winston-github-actions)     | GitHub Actions adapter; re-exports the base                  |
+| [`vsce-winston-logging`](packages/vsce-winston-logging)         | Deprecated shim that re-exports `winston-vscode`             |
+
+Keep host-specific imports out of `winston-host`. A new host is a new package that implements `Host`.
 
 Two git hooks run locally:
 
@@ -59,6 +73,13 @@ releases are the version history.
 
 ### Publishing
 
+> [!WARNING]
+> Releasing the workspace packages is not wired up yet. `npm-publish-strict` releases one package
+> per run with `vX.Y.Z` tags, which does not fit several packages in one repository, and
+> `publish.yml` still runs from the repository root, whose package is private. Decide how to
+> version and tag the packages (lockstep or independent) before the next release; the text below
+> describes the single-package flow.
+
 Every release is gated by CI on the exact commit being released:
 
 | Branch    | Releases                   | Example      | Started by                                   |
@@ -67,8 +88,8 @@ Every release is gated by CI on the exact commit being released:
 | `main`    | Official (stable) releases | `1.2.0`      | The promote workflow                         |
 
 - The [Nightly release candidate](.github/workflows/nightly.yml) workflow runs daily on `main`'s
-  schedule and starts `publish.yml` on `staging` only if `src/`, `package.json`,
-  `package-lock.json` or `tsconfig.build.json` changed since the last release tag. The release
+  schedule and starts `publish.yml` on `staging` only if a package's sources or manifest,
+  `package.json`, `package-lock.json` or `tsconfig.base.json` changed since the last release tag. The release
   still needs CI to have passed on `staging`'s latest commit, and semantic-release still skips it
   when no commit since the last release calls for a version.
 - Each release candidate increments the `rc` number until the version is promoted. Candidates get a
@@ -77,7 +98,7 @@ vsce-winston-logging` still gets the official release.
 - Releases publish to npm through trusted publishing, with provenance. npm trusts only
   [publish.yml](.github/workflows/publish.yml) started on its own, which is how both the nightly
   workflow and promote start it.
-- Every release builds the API docs ([typedoc.json](typedoc.json)) in semantic-release's `prepare`
+- Every release builds the API docs (each package's `typedoc.json`) in semantic-release's `prepare`
   step, through `@semantic-release/exec`, so a docs failure stops the release before it is tagged.
   Only official releases deploy them to GitHub Pages; candidates and runs that release nothing
   leave the site unchanged. Pages must be set to deploy from GitHub Actions, and the `github-pages`

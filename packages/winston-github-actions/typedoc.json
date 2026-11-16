@@ -1,8 +1,8 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.ts"],
-  "outputs": [{ "name": "html", "path": "./docs/api" }],
   "tsconfig": "tsconfig.build.json",
+  "outputs": [{ "name": "html", "path": "../../docs/api/winston-github-actions" }],
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
