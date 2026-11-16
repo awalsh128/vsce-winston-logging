@@ -22,22 +22,17 @@ extensions, GitHub Actions workflows, or any host you give a small adapter to.
 - 🧩 **Plain Winston**: Winston stays the only engine, so other transports and `child()` metadata
   work as usual.
 
-## Packages
-
-| Package | For | Install |
-| --- | --- | --- |
-| [`@awalsh128/winston-host`](packages/winston-host#readme) | The shared base. Depends only on Winston and never imports `vscode`. | `npm install @awalsh128/winston-host` |
-| [`@awalsh128/winston-vscode`](packages/winston-vscode#readme) | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode` |
-| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations, groups, debug levels, secret masking. | `npm install @awalsh128/winston-github-actions` |
-| `vsce-winston-logging` | Deprecated name of `winston-vscode`, kept so existing imports work. | |
-
 > [!IMPORTANT]
-> The scoped packages have not been published yet, so those install commands will work after the
+> The scoped packages have not been published yet, so the install commands below will work after the
 > first release. Until then, `vsce-winston-logging@1.x` is the published package.
 
 ## Quick Start
 
 In a GitHub Actions step, such as a JavaScript action:
+
+```sh
+npm install @awalsh128/winston-github-actions @actions/core
+```
 
 ```ts
 import { ActionsLogger } from "@awalsh128/winston-github-actions";
@@ -51,6 +46,15 @@ logger.debugLazy(() => `Config: ${JSON.stringify(config)}`); // built only when 
 ```
 
 In a VS Code extension, see the [`winston-vscode` README](packages/winston-vscode#readme).
+
+## Packages
+
+| Package | For | Install |
+| --- | --- | --- |
+| [`@awalsh128/winston-host`](packages/winston-host#readme) | The shared base. Depends only on Winston and never imports `vscode`. | `npm install @awalsh128/winston-host` |
+| [`@awalsh128/winston-vscode`](packages/winston-vscode#readme) | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode` |
+| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations, groups, debug levels, secret masking. | `npm install @awalsh128/winston-github-actions` |
+| `vsce-winston-logging` | Deprecated name of `winston-vscode`, kept so existing imports work. | |
 
 ## Writing an adapter
 
