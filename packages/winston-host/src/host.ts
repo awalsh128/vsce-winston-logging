@@ -124,6 +124,14 @@ export class HostLogger extends LazyLogger implements Disposable {
     setLogLevel(this, level);
   }
 
+  /**
+   * Creates a child logger whose lines carry a location, which `defaultFormat` prefixes and hosts
+   * can use, such as for annotations.
+   */
+  forLocation(location: Location): LazyLogger {
+    return this.child({ location });
+  }
+
   /** Stops following the host's level, closes the transports and disposes the host. */
   dispose(): void {
     this.levelSubscription?.dispose();

@@ -13,6 +13,7 @@
   "workspaces": [
     "packages/winston-host",
     "packages/winston-vscode",
+    "packages/winston-github-actions",
     "packages/vsce-winston-logging"
   ],
   "scripts": {

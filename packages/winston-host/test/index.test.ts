@@ -128,6 +128,13 @@ describe("winston-host", () => {
       expect(host.locations[0]).to.deep.equal({ path: "src/a.ts", line: 3, endLine: 6 });
     });
 
+    it("creates location loggers with forLocation", async () => {
+      logger.forLocation({ path: "b.ts", line: 9 }).info("here");
+      await flush();
+
+      expect(host.lines).to.deep.equal([["info", "b.ts[9]: here"]]);
+    });
+
     it("uses a custom format", async () => {
       const custom = new HostLogger(host, { format: (info) => `<${info.message}>` });
       custom.info("x");

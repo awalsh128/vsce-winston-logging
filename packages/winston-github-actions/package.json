@@ -1,0 +1,45 @@
+{
+  "name": "@awalsh128/winston-github-actions",
+  "version": "0.0.0-semantically-released",
+  "description": "Winston logger for GitHub Actions workflows, writing through @actions/core with annotations, groups and debug levels. Unofficial; not affiliated with Winston.",
+  "keywords": [
+    "winston",
+    "logging",
+    "logger",
+    "github-actions",
+    "actions"
+  ],
+  "license": "Apache-2.0",
+  "author": "awalsh128",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "directory": "packages/winston-github-actions"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@awalsh128/winston-host": "0.0.0-semantically-released",
+    "winston": "^3.19.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "mocha",
+    "docs:api": "typedoc --options typedoc.json",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "@actions/core": ">=1.10.0 <3"
+  },
+  "devDependencies": {
+    "@actions/core": "^2.0.3"
+  }
+}

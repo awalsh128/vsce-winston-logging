@@ -119,6 +119,6 @@ export class ExtensionLogger extends HostLogger implements vscode.Disposable {
    * an optional line range, such as `src/a.ts[3:7]: message`.
    */
   forDocument(uri: vscode.Uri, range?: vscode.Range): LazyLogger {
-    return this.child({ location: toLocation(uri, range) });
+    return this.forLocation(toLocation(uri, range));
   }
 }
