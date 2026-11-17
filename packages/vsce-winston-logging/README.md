@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > This package was renamed to
-> [`@awalsh128/winston-vscode`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-vscode#readme).
+> [`@awalsh128/winston-vscode`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-vscode#readme).
 > Version 2 only re-exports it, so existing imports keep working. Please switch to the new name.
 
 ```diff

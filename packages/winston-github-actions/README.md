@@ -2,7 +2,7 @@
 
 A [Winston](https://github.com/winstonjs/winston) logger for GitHub Actions workflows, writing
 through [`@actions/core`](https://github.com/actions/toolkit/tree/main/packages/core). Part of the
-[winston host adapters](https://github.com/awalsh128/vsce-winston-logging#readme), and an unofficial
+[winston host adapters](https://github.com/awalsh128/winston-host-adapters#readme), and an unofficial
 extension of Winston, not affiliated with the Winston project.
 
 - 📌 **Annotations**: errors and warnings can point at a file and lines.
@@ -93,4 +93,4 @@ await checkRun.flush(); // one check run with every collected annotation
 
 `@actions/core` `>=1.10 <3` as a peer dependency, tested with 2.0.3. Version 3 is ESM-only and this
 package is CommonJS, so it is not supported yet. The package re-exports
-[`@awalsh128/winston-host`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-host#readme).
+[`@awalsh128/winston-host`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-host#readme).

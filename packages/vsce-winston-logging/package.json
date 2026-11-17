@@ -13,7 +13,7 @@
   "author": "awalsh128",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awalsh128/vsce-winston-logging.git",
+    "url": "git+https://github.com/awalsh128/winston-host-adapters.git",
     "directory": "packages/vsce-winston-logging"
   },
   "main": "dist/index.js",
