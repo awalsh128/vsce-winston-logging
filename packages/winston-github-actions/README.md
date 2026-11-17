@@ -12,6 +12,10 @@ extension of Winston, not affiliated with the Winston project.
 - 🧮 **Unlimited annotations**: an optional Octokit transport reports them through the Checks API.
 - 🔒 **Secret masking**: `maskSecret()` calls `core.setSecret`.
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/awalsh128)
+
+If you find this project useful, please consider [sponsoring it](https://github.com/sponsors/awalsh128) and show some ❤️ for open source maintainers.
+
 ## Quick Start
 
 ```sh
