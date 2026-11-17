@@ -9,6 +9,10 @@ Use it to write an adapter for a new host. For VS Code or GitHub Actions, instal
 or [`@awalsh128/winston-github-actions`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-github-actions#readme),
 which re-export this package.
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/awalsh128)
+
+If you find this project useful, please consider [sponsoring it](https://github.com/sponsors/awalsh128) and show some ❤️ for open source maintainers.
+
 ## What's in it
 
 | Export | What it is |

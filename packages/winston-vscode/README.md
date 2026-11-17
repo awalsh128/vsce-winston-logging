@@ -28,6 +28,10 @@ A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions.
 - 🧩 **Plain Winston**: it is a normal Winston logger, so other transports and `child()` metadata
   work as usual.
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/awalsh128)
+
+If you find this project useful, please consider [sponsoring it](https://github.com/sponsors/awalsh128) and show some ❤️ for open source maintainers.
+
 ```sh
 npm install @awalsh128/winston-vscode
 ```
