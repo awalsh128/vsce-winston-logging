@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/awalsh128/vsce-winston-logging/main/images/logo.png" alt="Winston VS Code logging logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/awalsh128/winston-host-adapters/main/images/logo.png" alt="Winston VS Code logging logo" width="128" height="128">
 </p>
 
 <h1 align="center">Winston for VS Code</h1>
@@ -7,14 +7,14 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@awalsh128/winston-vscode"><img src="https://img.shields.io/npm/v/@awalsh128/winston-vscode?label=npm&color=%2314b8a6" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@awalsh128/winston-vscode"><img src="https://img.shields.io/npm/dm/@awalsh128/winston-vscode?label=npm%20downloads&color=blueviolet" alt="npm downloads"></a>
-  <a href="https://github.com/awalsh128/vsce-winston-logging/actions/workflows/ci.yml"><img src="https://github.com/awalsh128/vsce-winston-logging/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/awalsh128/vsce-winston-logging/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
-A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions. Part of [winston host adapters](https://github.com/awalsh128/vsce-winston-logging#readme), and an unofficial extension of Winston, not affiliated with the Winston project.
+A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions. Part of [winston host adapters](https://github.com/awalsh128/winston-host-adapters#readme), and an unofficial extension of Winston, not affiliated with the Winston project.
 
 > [!NOTE]
-> This package replaces `vsce-winston-logging`. See [Migrating](https://github.com/awalsh128/vsce-winston-logging#migrating-from-vsce-winston-logging).
+> This package replaces `vsce-winston-logging`. See [Migrating](https://github.com/awalsh128/winston-host-adapters#migrating-from-vsce-winston-logging).
 
 - 📺 **Output channel logging**: writes to the extension's own log output channel, with VS Code's
   timestamps, level labels, and filtering.
@@ -32,7 +32,7 @@ A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions.
 npm install @awalsh128/winston-vscode
 ```
 
-The package re-exports everything from [`@awalsh128/winston-host`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-host#readme), such as `LazyLogger`, `Benchmark` and `logAndGetError`, so one import covers it. It ships CommonJS with TypeScript types. It runs in the extension host and needs VS Code
+The package re-exports everything from [`@awalsh128/winston-host`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-host#readme), such as `LazyLogger`, `Benchmark` and `logAndGetError`, so one import covers it. It ships CommonJS with TypeScript types. It runs in the extension host and needs VS Code
 1.74 or later, the first version with `LogOutputChannel.onDidChangeLogLevel`.
 
 ## Usage
@@ -89,7 +89,7 @@ At `Debug` or `Trace`, the channel also starts with the logger's options and the
 
 ## API
 
-The full API reference for each release is at [awalsh128.com/vsce-winston-logging/winston-vscode](https://awalsh128.com/vsce-winston-logging/winston-vscode/).
+The full API reference for each release is at [awalsh128.com/winston-host-adapters/winston-vscode](https://awalsh128.com/winston-host-adapters/winston-vscode/).
 See all of my published APIs at [awalsh128.com/api](https://awalsh128.com/api/).
 
 ### `new ExtensionLogger(options)`
@@ -144,7 +144,7 @@ logger.traceLazy(() => `Response:\n${JSON.stringify(response, null, 2)}`); // th
 ```
 
 The function form is [Winston PR #2626](https://github.com/winstonjs/winston/pull/2626). See
-[`@awalsh128/winston-host`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-host#lazy-logging)
+[`@awalsh128/winston-host`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-host#lazy-logging)
 for how this package supplies it until Winston does.
 
 The lazy methods are on `LazyLogger`, which `ExtensionLogger` extends, so loggers from

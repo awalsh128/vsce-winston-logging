@@ -1,12 +1,12 @@
 # @awalsh128/winston-host
 
-The shared base of the [winston host adapters](https://github.com/awalsh128/vsce-winston-logging#readme).
+The shared base of the [winston host adapters](https://github.com/awalsh128/winston-host-adapters#readme).
 It depends only on [Winston](https://github.com/winstonjs/winston) and never imports `vscode`. This is
 an unofficial extension of Winston and is not affiliated with the Winston project.
 
 Use it to write an adapter for a new host. For VS Code or GitHub Actions, install
-[`@awalsh128/winston-vscode`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-vscode#readme)
-or [`@awalsh128/winston-github-actions`](https://github.com/awalsh128/vsce-winston-logging/tree/staging/packages/winston-github-actions#readme),
+[`@awalsh128/winston-vscode`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-vscode#readme)
+or [`@awalsh128/winston-github-actions`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-github-actions#readme),
 which re-export this package.
 
 ## What's in it

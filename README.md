@@ -5,8 +5,8 @@
 <h1 align="center">Winston Host Adapters</h1>
 
 <p align="center">
-  <a href="https://github.com/awalsh128/vsce-winston-logging/actions/workflows/ci.yml"><img src="https://github.com/awalsh128/vsce-winston-logging/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/awalsh128/vsce-winston-logging/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
 [Winston](https://github.com/winstonjs/winston) loggers for the places your code runs: VS Code
@@ -21,10 +21,6 @@ extensions, GitHub Actions workflows, or any host you give a small adapter to.
 - 🎚️ **Follows the host's level**: a VS Code output channel's level, or the runner's debug setting.
 - 🧩 **Plain Winston**: Winston stays the only engine, so other transports and `child()` metadata
   work as usual.
-
-> [!IMPORTANT]
-> The scoped packages have not been published yet, so the install commands below will work after the
-> first release. Until then, `vsce-winston-logging@1.x` is the published package.
 
 ## Quick Start
 
@@ -92,7 +88,7 @@ log output are unchanged.
 ## API
 
 The API reference for each package is at
-[awalsh128.com/vsce-winston-logging](https://awalsh128.com/vsce-winston-logging/). See all of my
+[awalsh128.com/winston-host-adapters](https://awalsh128.com/winston-host-adapters/). See all of my
 published APIs at [awalsh128.com/api](https://awalsh128.com/api/).
 
 ## Testing
