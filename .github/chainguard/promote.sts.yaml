@@ -2,12 +2,14 @@
 
 # Tokens for promote.yml to fast-forward main, which main's ruleset only lets the Octo STS app do.
 # Octo STS reads this file from the default branch (main), and only the promote workflow running
-# on staging matches. See CONTRIBUTING.md#release-credentials.
+# on staging matches. It accepts the repository's current name and its planned new one,
+# winston-host-adapters, so the rename doesn't cut off tokens; drop the old name afterwards. See
+# CONTRIBUTING.md#release-credentials.
 issuer: https://token.actions.githubusercontent.com
-subject_pattern: "repo:awalsh128@2087466/vsce-winston-logging@1457047089:.*"
+subject_pattern: "repo:awalsh128@2087466/(vsce-winston-logging|winston-host-adapters)@1457047089:.*"
 claim_pattern:
   ref: "refs/heads/staging"
-  job_workflow_ref: "awalsh128/vsce-winston-logging/\\.github/workflows/promote\\.yml@refs/heads/staging"
+  job_workflow_ref: "awalsh128/(vsce-winston-logging|winston-host-adapters)/\\.github/workflows/promote\\.yml@refs/heads/staging"
 
 permissions:
   contents: write
