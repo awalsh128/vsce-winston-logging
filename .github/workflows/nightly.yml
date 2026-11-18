@@ -45,12 +45,11 @@ jobs:
         run: |
           set -euo pipefail
           changed=false
-          # package directory:tag pattern (the deprecated name keeps its plain v* tags)
+          # package directory:tag pattern
           for entry in \
             "winston-host:winston-host-v*" \
             "winston-vscode:winston-vscode-v*" \
-            "winston-github-actions:winston-github-actions-v*" \
-            "vsce-winston-logging:v*"; do
+            "winston-github-actions:winston-github-actions-v*"; do
             package="${entry%%:*}"
             pattern="${entry#*:}"
             last="$(git describe --tags --abbrev=0 --match "$pattern" HEAD 2>/dev/null || true)"

@@ -60,7 +60,6 @@ In a VS Code extension, see the [`winston-vscode` README](packages/winston-vscod
 | [`@awalsh128/winston-host`](packages/winston-host#readme)                     | The shared base. Depends only on Winston and never imports `vscode`.            | `npm install @awalsh128/winston-host`           |
 | [`@awalsh128/winston-vscode`](packages/winston-vscode#readme)                 | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode`         |
 | [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations (also via the Checks API), groups, secret masking.  | `npm install @awalsh128/winston-github-actions` |
-| `vsce-winston-logging`                                                        | Deprecated name of `winston-vscode`, kept so existing imports work.             | Use `@awalsh128/winston-vscode` instead         |
 
 ## Writing an adapter
 
@@ -80,20 +79,6 @@ const logger = new HostLogger(host);
 
 Levels, `Location`, and the lazy methods are the same everywhere. Winston is Node-only, so browsers
 are not supported.
-
-## Migrating from `vsce-winston-logging`
-
-`vsce-winston-logging@2` re-exports `@awalsh128/winston-vscode`, so existing imports keep working.
-To migrate, change the dependency and the import:
-
-```diff
--import { ExtensionLogger } from "vsce-winston-logging";
-+import { ExtensionLogger } from "@awalsh128/winston-vscode";
-```
-
-One breaking change: `rangeText()` takes a `Location` (`{ line, endLine }`) instead of a
-`vscode.Range`. Convert with `toLocation(uri, range)`. `ExtensionLogger`, `forDocument()` and the
-log output are unchanged.
 
 ## API
 

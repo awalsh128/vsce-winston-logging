@@ -141,26 +141,6 @@ jobs:
           git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
           github-token: ${{ github.token }}
 
-      # The deprecated name keeps its v* tags, so it continues from 1.1.0.
-      # semantic-release writes the released version into the package's package.json. Put every
-      # tracked file back so the next package installs from the committed tree, where the internal
-      # dependencies and the lockfile still match. Build output and node_modules are untracked, so
-      # they stay.
-      - name: Restore package manifests after winston-github-actions
-        run: git checkout -- .
-
-      - name: Release vsce-winston-logging
-        id: shim
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
-        with:
-          working-directory: packages/vsce-winston-logging
-          commit-paths: packages/vsce-winston-logging
-          pin-dependencies: "@awalsh128/winston-vscode=winston-vscode-v${version}"
-          dry-run: ${{ inputs.dry-run || 'false' }}
-          baseline-commit: 90bc54b09d361f1d080b40a91815c6b7381a4d06
-          git-credentials: x-access-token:${{ steps.octo-sts.outputs.token }}
-          github-token: ${{ github.token }}
-
       # Only official releases update the docs site, which covers every package, so it is rebuilt
       # whole instead of from the package that released. Dry runs and runs that release nothing
       # leave every `version` output empty.
@@ -168,7 +148,7 @@ jobs:
         id: released
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
-          VERSIONS: ${{ steps.host.outputs.version }}${{ steps.vscode.outputs.version }}${{ steps.actions.outputs.version }}${{ steps.shim.outputs.version }}
+          VERSIONS: ${{ steps.host.outputs.version }}${{ steps.vscode.outputs.version }}${{ steps.actions.outputs.version }}
         run: echo "any=$([[ -n "$VERSIONS" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Build API docs

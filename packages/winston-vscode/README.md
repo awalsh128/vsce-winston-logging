@@ -13,9 +13,6 @@
 
 A [Winston](https://github.com/winstonjs/winston) logger for VS Code extensions. Part of [winston host adapters](https://github.com/awalsh128/winston-host-adapters#readme), and an unofficial extension of Winston, not affiliated with the Winston project.
 
-> [!NOTE]
-> This package replaces `vsce-winston-logging`. See [Migrating](https://github.com/awalsh128/winston-host-adapters#migrating-from-vsce-winston-logging).
-
 - 📺 **Output channel logging**: writes to the extension's own log output channel, with VS Code's
   timestamps, level labels, and filtering.
 - 🎚️ **Follows the channel's level**: users change how much it logs with
