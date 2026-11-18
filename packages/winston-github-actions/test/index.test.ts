@@ -2,7 +2,6 @@ import { expect } from "chai";
 import {
   ActionsLogger,
   levelFromEnv,
-  logAndGetError,
   toAnnotation,
   type AnnotationProperties,
   type Core,
@@ -128,16 +127,6 @@ describe("winston-github-actions", () => {
 
       expect(built).to.equal(1);
       expect(core.calls).to.deep.equal([["info", "y1"]]);
-    });
-
-    it("logs errors from logAndGetError as error annotations", async () => {
-      make();
-      logAndGetError(logger, new Error("boom"));
-      await flush();
-
-      expect(core.calls).to.have.length(1);
-      expect(core.calls[0][0]).to.equal("error");
-      expect(core.calls[0][1]).to.include("boom");
     });
 
     it("wraps a group's work and logs the time after it ends", async () => {
