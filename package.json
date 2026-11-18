@@ -1,5 +1,5 @@
 {
-  "name": "vsce-winston-logging-workspace",
+  "name": "winston-host-adapters-workspace",
   "private": true,
   "version": "0.0.0",
   "description": "Winston logging adapters for VS Code, GitHub Actions and other hosts.",
@@ -7,14 +7,12 @@
   "author": "awalsh128",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awalsh128/winston-host-adapters.git",
-    "directory": "packages/vsce-winston-logging"
+    "url": "git+https://github.com/awalsh128/winston-host-adapters.git"
   },
   "workspaces": [
     "packages/winston-host",
     "packages/winston-vscode",
-    "packages/winston-github-actions",
-    "packages/vsce-winston-logging"
+    "packages/winston-github-actions"
   ],
   "scripts": {
     "prepare": "husky",

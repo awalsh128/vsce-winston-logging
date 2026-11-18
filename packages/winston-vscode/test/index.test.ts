@@ -22,7 +22,7 @@ import { LogLevel, Range, state, Uri, workspace } from "./vscode-stub";
 /** Lets the transports flush, since winston writes asynchronously. */
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 
-describe("vsce-winston-logging", () => {
+describe("winston-vscode", () => {
   let logger: ExtensionLogger;
   const channel = () => state.lastChannel!;
 
@@ -214,7 +214,7 @@ describe("vsce-winston-logging", () => {
   describe("setFileLogging", () => {
     let dir: string;
 
-    beforeEach(() => (dir = fs.mkdtempSync(path.join(os.tmpdir(), "vsce-winston-logging-"))));
+    beforeEach(() => (dir = fs.mkdtempSync(path.join(os.tmpdir(), "winston-vscode-"))));
     afterEach(async () => {
       logger.setFileLogging(undefined);
       // File transports open and close their files asynchronously.

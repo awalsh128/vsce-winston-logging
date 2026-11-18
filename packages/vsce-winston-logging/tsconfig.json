@@ -1,7 +1,0 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "types": ["node", "mocha"]
-  },
-  "include": ["src", "test", "../winston-vscode/test/setup.ts"]
-}

@@ -18,7 +18,6 @@ typechecks and tests.
 | [`winston-host`](packages/winston-host)                     | Shared base. Depends only on Winston; never imports `vscode` |
 | [`winston-vscode`](packages/winston-vscode)                 | VS Code adapter; re-exports the base                         |
 | [`winston-github-actions`](packages/winston-github-actions) | GitHub Actions adapter; re-exports the base                  |
-| [`vsce-winston-logging`](packages/vsce-winston-logging)     | Deprecated shim that re-exports `winston-vscode`             |
 
 Keep host-specific imports out of `winston-host`. A new host is a new package that implements `Host`.
 
@@ -84,7 +83,6 @@ dependency order, with the package's `working-directory`, `tag-format`, `commit-
 | `winston-host`           | `winston-host-vX.Y.Z`           |                                |
 | `winston-vscode`         | `winston-vscode-vX.Y.Z`         | `winston-host`                 |
 | `winston-github-actions` | `winston-github-actions-vX.Y.Z` | `winston-host`                 |
-| `vsce-winston-logging`   | `vX.Y.Z` (its original tags)    | `winston-vscode`               |
 
 - Packages keep the placeholder version, and internal dependencies keep the placeholder too. At
   release, each internal dependency becomes `^` and the latest released version of that package, in
@@ -109,7 +107,7 @@ Every release is gated by CI on the exact commit being released:
   when no commit since the last release calls for a version.
 - Each release candidate increments the `rc` number until the version is promoted. Candidates get a
   tag, a GitHub prerelease and an npm publish under the `rc` dist-tag, so `npm install
-vsce-winston-logging` still gets the official release.
+@awalsh128/winston-vscode` still gets the official release.
 - Releases publish to npm through trusted publishing, with provenance. npm trusts only
   [publish.yml](.github/workflows/publish.yml) started on its own, which is how both the nightly
   workflow and promote start it.
