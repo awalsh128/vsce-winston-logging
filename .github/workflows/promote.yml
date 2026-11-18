@@ -5,6 +5,11 @@ name: Promote staging to main
 
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: "Start the official release after promoting. Turn off to only move main."
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -65,7 +70,9 @@ jobs:
           git push origin "$STAGING_SHA:refs/heads/main"
 
       # Starting the release on main makes semantic-release cut an official release, not a candidate.
+      # Turn the `release` input off to promote without releasing; start Publish on main later.
       - name: Start official release
+        if: ${{ inputs.release }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
