@@ -5,7 +5,7 @@ import {
   MAX_ANNOTATIONS_PER_REQUEST,
   type ChecksOctokit,
   type Core,
-} from "../src";
+} from "../src/index.js";
 
 /** Lets the transports flush, since winston writes asynchronously. */
 const flush = () => new Promise((resolve) => setImmediate(resolve));
