@@ -30,7 +30,8 @@ declare module "winston" {
 
 type LevelMethod = winston.LeveledLogMethod;
 
-let nativeLevelMethods: Partial<Record<LogLevel, LevelMethod>> | undefined | null = null;
+/** The result of probing Winston once; `methods` is undefined when Winston has no native lazy logging. */
+let nativeProbe: { methods: Partial<Record<LogLevel, LevelMethod>> | undefined } | undefined;
 
 /**
  * Winston's own level methods, when the installed Winston already accepts a function as the message
@@ -74,15 +75,20 @@ export function findNativeLazy(
   }
 }
 
+/** Winston's own level methods, found by probing the first time and remembered after that. */
+function getNativeLevelMethods(): Partial<Record<LogLevel, LevelMethod>> | undefined {
+  nativeProbe ??= { methods: findNativeLazy() };
+  return nativeProbe.methods;
+}
+
 /** Whether lazy logging uses the installed Winston's own implementation instead of the shim. */
 export function usesNativeLazy(): boolean {
-  nativeLevelMethods = nativeLevelMethods === null ? (findNativeLazy() ?? undefined) : nativeLevelMethods;
-  return nativeLevelMethods !== undefined;
+  return getNativeLevelMethods() !== undefined;
 }
 
 /** Forgets what `usesNativeLazy()` found, so the next call probes again. For tests. */
 export function resetNativeLazy(): void {
-  nativeLevelMethods = null;
+  nativeProbe = undefined;
 }
 
 /**
@@ -109,10 +115,9 @@ function createLeveledLog(level: LogLevel): LevelMethod {
       if (this.silent || !this.isLevelEnabled(level)) {
         return this;
       }
-      usesNativeLazy();
       // PR #2626's first version replaces every argument with the function's result, which drops
       // any metadata after the function, so Winston's method only gets the case it handles well.
-      const native = args.length === 1 ? nativeLevelMethods?.[level] : undefined;
+      const native = args.length === 1 ? getNativeLevelMethods()?.[level] : undefined;
       return native ? (native as (...a: unknown[]) => winston.Logger).apply(this, args) : shimLazy(this, level, args);
     }
     if (args.length === 1) {

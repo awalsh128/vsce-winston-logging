@@ -4,3 +4,4 @@ export * from "./core";
 export * from "./logger";
 export * from "./transport";
 export * from "./check-run";
+export * from "./check-target";

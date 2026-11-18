@@ -1,13 +1,9 @@
 import { expect } from "chai";
 import { getOctokit } from "@actions/github";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import {
   ActionsLogger,
   CheckRunTransport,
   MAX_ANNOTATIONS_PER_REQUEST,
-  targetFromEnv,
   type ChecksOctokit,
   type Core,
 } from "../src";
@@ -152,32 +148,5 @@ describe("CheckRunTransport", () => {
       expect(requests[0]!.body.output.annotations).to.have.length(50);
       expect(requests[1]!.body.output.annotations).to.have.length(1);
     });
-  });
-});
-
-describe("targetFromEnv", () => {
-  const event = (payload: object) => {
-    const file = join(mkdtempSync(join(tmpdir(), "event-")), "event.json");
-    writeFileSync(file, JSON.stringify(payload));
-    return file;
-  };
-
-  it("uses GITHUB_REPOSITORY and GITHUB_SHA", () => {
-    expect(targetFromEnv({ GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "merge" })).to.deep.equal({ owner: "o", repo: "r", sha: "merge" });
-  });
-
-  it("uses a pull request's head commit over GITHUB_SHA", () => {
-    const env = { GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "merge", GITHUB_EVENT_PATH: event({ pull_request: { head: { sha: "head" } } }) };
-    expect(targetFromEnv(env).sha).to.equal("head");
-  });
-
-  it("an event without a pull request keeps GITHUB_SHA", () => {
-    const env = { GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "push", GITHUB_EVENT_PATH: event({ ref: "x" }) };
-    expect(targetFromEnv(env).sha).to.equal("push");
-  });
-
-  it("missing repository or commit throws", () => {
-    expect(() => targetFromEnv({ GITHUB_REPOSITORY: "o/r" })).to.throw("Can't tell the repository and commit");
-    expect(() => targetFromEnv({ GITHUB_SHA: "x" })).to.throw("Can't tell the repository and commit");
   });
 });

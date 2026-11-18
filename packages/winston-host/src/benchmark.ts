@@ -1,11 +1,7 @@
 import { performance } from "node:perf_hooks";
+import type { Disposable } from "./disposable";
 import type { LazyLogger } from "./lazy";
 import type { LogLevel } from "./levels";
-
-/** Anything that can be cleaned up; matches `vscode.Disposable` and `using` declarations. */
-export interface Disposable {
-  dispose(): void;
-}
 
 /** Simple stopwatch to measure elapsed time. */
 export class Benchmark {

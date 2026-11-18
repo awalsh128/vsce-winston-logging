@@ -105,13 +105,17 @@ export class ExtensionLogger extends HostLogger implements vscode.Disposable {
     this.fileTransport = new winston.transports.File({
       filename,
       level: this.level,
-      format: winston.format.printf(
-        (info) => `${info.timestamp ?? new Date().toISOString()} [${info.level}] ${this.format_(info)}`,
-      ),
+      format: winston.format.printf((info) => this.formatFileLine(info)),
     });
     this.add(this.fileTransport);
     this.info(`File logging enabled\n  path: "${filename}"\n  level: "${this.level}"`);
     return filename;
+  }
+
+  /** A file line: the timestamp and level, then the message as the logger's format writes it. */
+  private formatFileLine(info: TransformableInfo): string {
+    const timestamp = info.timestamp ?? new Date().toISOString();
+    return `${timestamp} [${info.level}] ${this.format_(info)}`;
   }
 
   /**
