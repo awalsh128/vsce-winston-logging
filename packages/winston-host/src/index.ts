@@ -5,5 +5,3 @@ export * from "./host";
 export * from "./lazy";
 export * from "./levels";
 export * from "./location";
-export * from "./log-error";
-export * from "./log-level";

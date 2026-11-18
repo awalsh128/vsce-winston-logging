@@ -4,9 +4,8 @@ import TransportStream from "winston-transport";
 import type { Disposable } from "./disposable";
 import { defaultFormat } from "./format";
 import { LazyLogger } from "./lazy";
-import { LOG_LEVELS, type LogLevel, type LogLevelOrOff } from "./levels";
+import { LOG_LEVELS, setLogLevel, type LogLevel, type LogLevelOrOff } from "./levels";
 import type { Location } from "./location";
-import { setLogLevel } from "./log-level";
 
 /**
  * Everything the shared logger needs from the host it runs in. Each adapter implements it for its
