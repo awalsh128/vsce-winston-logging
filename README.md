@@ -16,9 +16,11 @@ extensions, GitHub Actions workflows, or any host you give a small adapter to.
 > This is an unofficial extension of Winston and is not affiliated with the Winston project.
 
 - 💤 **Lazy logging**: `logger.debug(() => message)` builds a message only when its level is enabled.
-- 🔌 **One small host interface**: a sink, the host's level, and a dispose hook. An adapter is about
+- 🔌 **One small host interface**: a transport factory, the host's level, and a dispose hook. An adapter is about
   a page of code.
 - 🎚️ **Follows the host's level**: a VS Code output channel's level, or the runner's debug setting.
+- 🚚 **Standalone transports**: `ActionsTransport` and `OutputChannelTransport` work in any
+  `winston.createLogger`, with no `HostLogger` needed.
 - 🧩 **Plain Winston**: Winston stays the only engine, so other transports and `child()` metadata
   work as usual.
 
@@ -67,7 +69,7 @@ An adapter implements `Host` from `@awalsh128/winston-host` and passes it to `Ho
 import { HostLogger, type Host } from "@awalsh128/winston-host";
 
 const host: Host = {
-  sink: { write: (level, message, location) => myHost.log(level, message) },
+  createTransport: (format) => new MyHostTransport({ format }), // a winston-transport subclass
   getLevel: () => "info",
   onLevelChange: (listener) => myHost.onLevel(listener), // optional
   dispose: () => myHost.close(), // optional

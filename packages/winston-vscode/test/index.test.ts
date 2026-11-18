@@ -320,6 +320,20 @@ describe("vsce-winston-logging", () => {
     });
   });
 
+  describe("OutputChannelTransport unknown levels", () => {
+    it("writes them as [UNKNOWN/level] lines", async () => {
+      const ch = new (require("./vscode-stub").FakeLogOutputChannel)("T", LogLevel.Info);
+      const plain = winston.createLogger({
+        level: "silly",
+        transports: [new OutputChannelTransport({ outputChannel: ch })],
+      });
+      plain.silly("odd");
+      await flush();
+
+      expect(ch.lines).to.deep.equal([["line", "[UNKNOWN/silly] odd"]]);
+    });
+  });
+
   describe("mapLevel", () => {
     it("replaces the level mapping", async () => {
       state.initialLevel = LogLevel.Error;

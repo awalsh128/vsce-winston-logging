@@ -1,4 +1,7 @@
-import type { Disposable, Host, Location, LogLevel, LogLevelOrOff } from "../src";
+import type { Format, TransformableInfo } from "logform";
+import { LEVEL, MESSAGE } from "triple-beam";
+import TransportStream from "winston-transport";
+import { getLocation, type Disposable, type Host, type Location, type LogLevelOrOff } from "../src";
 
 export type Line = [level: string, message: string];
 
@@ -26,12 +29,16 @@ export class FakeHost implements Host {
     }
   }
 
-  readonly sink = {
-    write: (level: LogLevel, message: string, location?: Location) => {
-      this.lines.push([level, message]);
-      this.locations.push(location);
-    },
-  };
+  createTransport(format: Format): TransportStream {
+    const host = this;
+    return new (class extends TransportStream {
+      override log(info: TransformableInfo, next: () => void): void {
+        host.lines.push([String(info[LEVEL]), String(info[MESSAGE])]);
+        host.locations.push(getLocation(info));
+        next();
+      }
+    })({ format });
+  }
 
   getLevel(): LogLevelOrOff {
     return this.level;

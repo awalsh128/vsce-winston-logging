@@ -17,8 +17,8 @@ If you find this project useful, please consider [sponsoring it](https://github.
 
 | Export | What it is |
 | --- | --- |
-| `Host`, `HostSink` | What an adapter implements: where lines go, the host's level, level changes, disposal. |
-| `HostLogger`, `HostTransport` | The Winston logger and transport that use a `Host`. `forLocation(location)` makes a child logger. |
+| `Host` | What an adapter implements: a transport factory, the host's level, level changes, disposal. |
+| `HostLogger` | The Winston logger that uses a `Host`. `forLocation(location)` makes a child logger. |
 | `LazyLogger` | Winston logger whose level methods take a function as the message, plus the `errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, `traceLazy` and `logLazy` aliases. Self-contained in `lazy.ts`. |
 | `LogLevel`, `LOG_LEVELS` | `error`, `warn`, `info`, `debug`, `trace`. |
 | `Location` | `{ path, line?, endLine?, column? }`, the host-neutral place a message is about. |
@@ -28,9 +28,10 @@ If you find this project useful, please consider [sponsoring it](https://github.
 
 ```ts
 import { HostLogger, type Host } from "@awalsh128/winston-host";
+import * as winston from "winston";
 
 const host: Host = {
-  sink: { write: (level, message) => console.log(`[${level}] ${message}`) },
+  createTransport: (format) => new winston.transports.Console({ format }),
   getLevel: () => "info",
 };
 new HostLogger(host).infoLazy(() => "ready");

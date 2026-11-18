@@ -6,7 +6,6 @@ import {
   defaultFormat,
   DisposableBenchmark,
   HostLogger,
-  HostTransport,
   isLogLevel,
   LOG_LEVELS,
   logAndGetError,
@@ -42,7 +41,7 @@ describe("winston-host", () => {
     });
     afterEach(() => logger.dispose());
 
-    it("writes each level to the sink", async () => {
+    it("writes each level through the host's transport", async () => {
       host.fireLevel("trace");
       logger.error("e");
       logger.warn("w");
@@ -115,7 +114,7 @@ describe("winston-host", () => {
       expect(host.lines).to.deep.equal([["info", "built 1"]]);
     });
 
-    it("keeps lazy methods on child loggers and passes their location to the sink", async () => {
+    it("keeps lazy methods on child loggers and passes their location to the transport", async () => {
       const child = logger.child({ location: { path: "src/a.ts", line: 3, endLine: 6 } });
       child.info("message");
       child.infoLazy(() => "lazy");
@@ -183,25 +182,6 @@ describe("winston-host", () => {
       expect(logger.level).to.equal("trace");
       logger.setLevel("off");
       expect(logger.silent).to.be.true;
-    });
-  });
-
-  describe("HostTransport", () => {
-    it("writes lines with unknown levels through writeUnknown, or as info without it", async () => {
-      const seen: string[] = [];
-      const withUnknown = new HostTransport({
-        sink: { write: () => undefined, writeUnknown: (l, m) => void seen.push(`${l}:${m}`) },
-      });
-      const lines: [string, string][] = [];
-      const without = new HostTransport({ sink: { write: (l, m) => void lines.push([l, m]) } });
-      const info = { level: "silly", message: "x" };
-
-      withUnknown.log(info, () => undefined);
-      without.log(info, () => undefined);
-      await flush();
-
-      expect(seen).to.deep.equal(["silly:x"]);
-      expect(lines).to.deep.equal([["info", "[UNKNOWN/silly] x"]]);
     });
   });
 
