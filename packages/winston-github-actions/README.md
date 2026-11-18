@@ -59,6 +59,20 @@ logger.maskSecret(token); // the runner masks it in the workflow log from now on
 ```
 
 Groups don't nest in a workflow log, so a group started inside another only logs its time.
+## Using the transport alone
+
+`ActionsTransport` works in any Winston logger, so you can skip `ActionsLogger`:
+
+```ts
+import * as winston from "winston";
+import { ActionsTransport } from "@awalsh128/winston-github-actions";
+
+const logger = winston.createLogger({ transports: [new ActionsTransport()] });
+```
+
+`error` and `warn` become annotations, pointing at `info.location` when a line has one. `debug` and
+`trace` become debug lines, and every other level becomes a plain log line.
+
 `maskSecret` is the runner's masking of the workflow log; other transports you add are not masked.
 
 ## Annotations beyond the limit

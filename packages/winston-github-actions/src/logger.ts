@@ -11,7 +11,7 @@ import {
 } from "@awalsh128/winston-host";
 import * as actionsCore from "@actions/core";
 import type { Core } from "./core";
-import { actionsSink } from "./sink";
+import { ActionsTransport } from "./transport";
 
 /** The level for a run: everything when the runner's debug logging is on, otherwise `info`. */
 export function levelFromEnv(core: Core, env: NodeJS.ProcessEnv = process.env): LogLevelOrOff {
@@ -68,7 +68,7 @@ export class ActionsLogger extends HostLogger {
   constructor(options: ActionsLoggerOptions = {}) {
     const core: Core = options.core ?? actionsCore;
     const host: Host = {
-      sink: actionsSink(core),
+      createTransport: (format) => new ActionsTransport({ core, format }),
       getLevel: () => levelFromEnv(core, options.env),
     };
     super(host, { format: options.format ?? plainFormat, transports: options.transports });
