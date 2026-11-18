@@ -24,7 +24,7 @@ If you find this project useful, please consider [sponsoring it](https://github.
 | `Location`                                               | `{ path, line?, endLine?, column? }`, the host-neutral place a message is about.                                                                                                              |
 | `defaultFormat`, `plainFormat`, `toLogText`, `rangeText` | Message formatting.                                                                                                                                                                           |
 | `Benchmark`, `DisposableBenchmark`                       | Stopwatches; the second logs its time when disposed.                                                                                                                                          |
-| `logAndGetError`, `setLogLevel`                          | Log an error and get it back to throw; set a logger's and its transports' level.                                                                                                              |
+| `setLogLevel`                                            | Set a logger's and its transports' level.                                                                                                                                                     |
 
 ```ts
 import { HostLogger, type Host } from "@awalsh128/winston-host";

@@ -33,7 +33,7 @@ If you find this project useful, please consider [sponsoring it](https://github.
 npm install @awalsh128/winston-vscode
 ```
 
-The package re-exports everything from [`@awalsh128/winston-host`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-host#readme), such as `LazyLogger`, `Benchmark` and `logAndGetError`, so one import covers it. It ships CommonJS with TypeScript types. It runs in the extension host and needs VS Code
+The package re-exports everything from [`@awalsh128/winston-host`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-host#readme), such as `LazyLogger` and `Benchmark`, so one import covers it. It ships CommonJS with TypeScript types. It runs in the extension host and needs VS Code
 1.74 or later, the first version with `LogOutputChannel.onDidChangeLogLevel`.
 
 ## Usage
@@ -170,20 +170,6 @@ context.subscriptions.push(
     }
   }),
 );
-```
-
-### `logAndGetError(logger, error)`
-
-Logs a thrown value at `error` level and returns it as an `Error` to rethrow. Strings become the
-error's message, and other values are formatted with `toLogText`. The `Error` is attached to the
-line's metadata, so `defaultFormat` logs the whole error with its stack.
-
-```ts
-try {
-  await run();
-} catch (err) {
-  throw logAndGetError(logger, err);
-}
 ```
 
 ### `Benchmark`

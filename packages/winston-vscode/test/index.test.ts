@@ -10,7 +10,6 @@ import {
   ExtensionLogger,
   fromVscodeLogLevel,
   LazyLogger,
-  logAndGetError,
   OutputChannelTransport,
   rangeText,
   setLogLevel,
@@ -266,24 +265,6 @@ describe("winston-vscode", () => {
 
       expect(plain.level).to.equal("debug");
       expect(transport.level).to.equal("debug");
-    });
-  });
-
-  describe("logAndGetError", () => {
-    [
-      ["an Error", new Error("boom"), "boom", "boom"],
-      ["a string", "boom", "boom", "boom"],
-      ["an object", { code: 1 }, "{\n  code: 1\n}", "code: 1"],
-    ].forEach(([name, input, message, logged]) => {
-      it(`logs and returns ${name} as an Error`, async () => {
-        const err = logAndGetError(logger, input);
-        await flush();
-
-        expect(err).to.be.instanceOf(Error);
-        expect(err.message).to.equal(message);
-        expect(channel().lines[0][0]).to.equal("error");
-        expect(channel().lines[0][1]).to.include(logged as string);
-      });
     });
   });
 
