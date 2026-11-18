@@ -5,7 +5,8 @@
 <h1 align="center">Winston Host Adapters</h1>
 
 <p align="center">
-  <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI on main"></a>
+  <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml?query=branch%3Astaging"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg?branch=staging" alt="CI on staging"></a>
   <a href="https://github.com/awalsh128/winston-host-adapters/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
@@ -19,8 +20,8 @@ extensions, GitHub Actions workflows, or any host you give a small adapter to.
 - 🔌 **One small host interface**: a transport factory, the host's level, and a dispose hook. An adapter is about
   a page of code.
 - 🎚️ **Follows the host's level**: a VS Code output channel's level, or the runner's debug setting.
-- 🚚 **Standalone transports**: `ActionsTransport` and `OutputChannelTransport` work in any
-  `winston.createLogger`, with no `HostLogger` needed.
+- 🚚 **Standalone transports**: `ActionsTransport`, `CheckRunTransport` and `OutputChannelTransport`
+  work in any `winston.createLogger`, with no `HostLogger` needed.
 - 🧩 **Plain Winston**: Winston stays the only engine, so other transports and `child()` metadata
   work as usual.
 
@@ -58,7 +59,7 @@ In a VS Code extension, see the [`winston-vscode` README](packages/winston-vscod
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------- |
 | [`@awalsh128/winston-host`](packages/winston-host#readme)                     | The shared base. Depends only on Winston and never imports `vscode`.            | `npm install @awalsh128/winston-host`           |
 | [`@awalsh128/winston-vscode`](packages/winston-vscode#readme)                 | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode`         |
-| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations, groups, debug levels, secret masking.              | `npm install @awalsh128/winston-github-actions` |
+| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations (also via the Checks API), groups, secret masking.  | `npm install @awalsh128/winston-github-actions` |
 | `vsce-winston-logging`                                                        | Deprecated name of `winston-vscode`, kept so existing imports work.             | Use `@awalsh128/winston-vscode` instead         |
 
 ## Writing an adapter
