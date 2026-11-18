@@ -2,8 +2,9 @@
 
 > [!WARNING]
 > This package was renamed to
-> [`@awalsh128/winston-vscode`](https://github.com/awalsh128/winston-host-adapters/tree/staging/packages/winston-vscode#readme).
-> Version 2 only re-exports it, so existing imports keep working. Please switch to the new name.
+> [`@awalsh128/winston-vscode`](https://github.com/awalsh128/winston-host-adapters/tree/main/packages/winston-vscode#readme).
+> This package only re-exports it (version 2.0.1 and later track `@awalsh128/winston-vscode` 2.x), so existing
+> imports keep working. Please switch to the new name.
 
 ```diff
 -npm install vsce-winston-logging
