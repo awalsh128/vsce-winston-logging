@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { getOctokit } from "@actions/github";
 import {
   ActionsLogger,
   CheckRunTransport,
@@ -154,6 +153,8 @@ describe("CheckRunTransport", () => {
         });
       };
 
+      // @actions/github 9 is ESM-only, so a CommonJS test loads it with a dynamic import.
+      const { getOctokit } = await import("@actions/github");
       const real = new CheckRunTransport({
         octokit: getOctokit("token", { request: { fetch } }),
         target,
