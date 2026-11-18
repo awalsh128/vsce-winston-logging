@@ -52,11 +52,15 @@ export class DisposableBenchmark extends Benchmark implements Disposable {
 
   /** Logs the lambda's message at its level, followed by the elapsed time. */
   dispose(): void {
-    if (this.logger.silent || !this.logger.isLevelEnabled(this.getLog().level)) {
+    if (this.logger.silent) {
       return;
     }
 
     const { level, message } = this.getLog();
+    if (!this.logger.isLevelEnabled(level)) {
+      return;
+    }
+
     this.logger.logLazy(level, () => `${message} (${this.getDeltaAsText()})`);
   }
 }

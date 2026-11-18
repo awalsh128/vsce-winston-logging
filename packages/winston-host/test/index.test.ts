@@ -262,6 +262,14 @@ describe("winston-host", () => {
       expect(host.lines[0][1]).to.match(/^Scan finished \(\d+ms\)$/);
     });
 
+    it("calls the lambda once when it logs", () => {
+      let calls = 0;
+
+      new DisposableBenchmark(logger, () => (calls++, { level: "debug", message: "x" })).dispose();
+
+      expect(calls).to.equal(1);
+    });
+
     it("does nothing when the level is not enabled", async () => {
       new DisposableBenchmark(logger, () => ({ level: "trace", message: "hidden" })).dispose();
       await flush();
