@@ -1,4 +1,4 @@
 {
-  "require": ["tsx/cjs"],
+  "node-option": ["import=tsx"],
   "spec": "test/**/*.test.ts"
 }

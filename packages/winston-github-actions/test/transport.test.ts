@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import * as winston from "winston";
-import { ActionsTransport, type Core } from "../src";
+import { ActionsTransport, type Core } from "../src/index.js";
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 type Call = [method: string, ...args: unknown[]];

@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect } from "chai";
-import { targetFromEnv } from "../src";
+import { targetFromEnv } from "../src/index.js";
 
 describe("targetFromEnv", () => {
   const event = (payload: object) => {

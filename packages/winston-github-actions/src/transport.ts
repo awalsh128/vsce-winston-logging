@@ -3,7 +3,7 @@ import type { TransformableInfo } from "logform";
 import { LEVEL, MESSAGE } from "triple-beam";
 import * as winston from "winston";
 import TransportStream from "winston-transport";
-import type { AnnotationProperties, Core } from "./core";
+import type { AnnotationProperties, Core } from "./core.js";
 
 /** Converts a location to annotation properties, so errors and warnings point at the file and lines. */
 export function toAnnotation(location?: Location): AnnotationProperties | undefined {

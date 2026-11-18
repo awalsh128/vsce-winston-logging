@@ -9,8 +9,8 @@ import {
   type HostLoggerOptions,
 } from "@awalsh128/winston-host";
 import * as actionsCore from "@actions/core";
-import type { Core } from "./core";
-import { ActionsTransport } from "./transport";
+import type { Core } from "./core.js";
+import { ActionsTransport } from "./transport.js";
 
 /** The level for a run: everything when the runner's debug logging is on, otherwise `info`. */
 export function levelFromEnv(core: Core, env: NodeJS.ProcessEnv = process.env): LogLevelOrOff {

@@ -3,7 +3,7 @@ import type { TransformableInfo } from "logform";
 import { LEVEL, MESSAGE } from "triple-beam";
 import * as winston from "winston";
 import TransportStream from "winston-transport";
-import { targetFromEnv, type CheckTarget } from "./check-target";
+import { targetFromEnv, type CheckTarget } from "./check-target.js";
 
 /** GitHub accepts at most this many annotations in one request. */
 export const MAX_ANNOTATIONS_PER_REQUEST = 50;
