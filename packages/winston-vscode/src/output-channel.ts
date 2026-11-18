@@ -1,9 +1,4 @@
-import {
-  defaultFormat,
-  isLogLevel,
-  type Host,
-  type LogLevelOrOff,
-} from "@awalsh128/winston-host";
+import { defaultFormat, isLogLevel, type Host, type LogLevelOrOff } from "@awalsh128/winston-host";
 import type { TransformableInfo } from "logform";
 import { LEVEL, MESSAGE } from "triple-beam";
 import type * as vscode from "vscode";
@@ -61,6 +56,7 @@ export class OutputChannelTransport extends TransportStream {
     } else {
       this.outputChannel.appendLine(`[UNKNOWN/${level}] ${message}`);
     }
+
     next();
   }
 }

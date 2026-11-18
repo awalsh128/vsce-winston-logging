@@ -15,16 +15,16 @@ If you find this project useful, please consider [sponsoring it](https://github.
 
 ## What's in it
 
-| Export | What it is |
-| --- | --- |
-| `Host` | What an adapter implements: a transport factory, the host's level, level changes, disposal. |
-| `HostLogger` | The Winston logger that uses a `Host`. `forLocation(location)` makes a child logger. |
-| `LazyLogger` | Winston logger whose level methods take a function as the message, plus the `errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, `traceLazy` and `logLazy` aliases. Self-contained in `lazy.ts`. |
-| `LogLevel`, `LOG_LEVELS` | `error`, `warn`, `info`, `debug`, `trace`. |
-| `Location` | `{ path, line?, endLine?, column? }`, the host-neutral place a message is about. |
-| `defaultFormat`, `plainFormat`, `toLogText`, `rangeText` | Message formatting. |
-| `Benchmark`, `DisposableBenchmark` | Stopwatches; the second logs its time when disposed. |
-| `logAndGetError`, `setLogLevel` | Log an error and get it back to throw; set a logger's and its transports' level. |
+| Export                                                   | What it is                                                                                                                                                                                    |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Host`                                                   | What an adapter implements: a transport factory, the host's level, level changes, disposal.                                                                                                   |
+| `HostLogger`                                             | The Winston logger that uses a `Host`. `forLocation(location)` makes a child logger.                                                                                                          |
+| `LazyLogger`                                             | Winston logger whose level methods take a function as the message, plus the `errorLazy`, `warnLazy`, `infoLazy`, `debugLazy`, `traceLazy` and `logLazy` aliases. Self-contained in `lazy.ts`. |
+| `LogLevel`, `LOG_LEVELS`                                 | `error`, `warn`, `info`, `debug`, `trace`.                                                                                                                                                    |
+| `Location`                                               | `{ path, line?, endLine?, column? }`, the host-neutral place a message is about.                                                                                                              |
+| `defaultFormat`, `plainFormat`, `toLogText`, `rangeText` | Message formatting.                                                                                                                                                                           |
+| `Benchmark`, `DisposableBenchmark`                       | Stopwatches; the second logs its time when disposed.                                                                                                                                          |
+| `logAndGetError`, `setLogLevel`                          | Log an error and get it back to throw; set a logger's and its transports' level.                                                                                                              |
 
 ```ts
 import { HostLogger, type Host } from "@awalsh128/winston-host";

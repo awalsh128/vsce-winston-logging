@@ -1,6 +1,5 @@
 name: "Require CI success"
-description:
-  "Fails unless the latest completed CI workflow run for a commit concluded successfully."
+description: "Fails unless the latest completed CI workflow run for a commit concluded successfully."
 
 inputs:
   sha:

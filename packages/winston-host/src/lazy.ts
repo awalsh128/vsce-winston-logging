@@ -60,6 +60,7 @@ export function findNativeLazy(
     if (seen !== "native") {
       return undefined;
     }
+
     // The level methods live on the prototype of the logger createLogger made, and take `this`.
     const prototype = Object.getPrototypeOf(probe) as Record<string, unknown>;
     const methods: Partial<Record<LogLevel, LevelMethod>> = {};
@@ -67,8 +68,10 @@ export function findNativeLazy(
       if (typeof prototype[level] !== "function") {
         return undefined;
       }
+
       methods[level] = prototype[level] as LevelMethod;
     }
+
     return methods;
   } catch {
     return undefined;
@@ -99,7 +102,9 @@ export function resetNativeLazy(): void {
 function shimLazy(logger: winston.Logger, level: LogLevel, args: unknown[]): winston.Logger {
   const [getMessage, ...meta] = args as [() => unknown, ...unknown[]];
   const message = getMessage();
-  return meta.length === 0 ? logger.log(level, message as string) : logger.log(level, message as string, ...meta);
+  return meta.length === 0
+    ? logger.log(level, message as string)
+    : logger.log(level, message as string, ...meta);
 }
 
 /**
@@ -115,17 +120,23 @@ function createLeveledLog(level: LogLevel): LevelMethod {
       if (this.silent || !this.isLevelEnabled(level)) {
         return this;
       }
+
       // PR #2626's first version replaces every argument with the function's result, which drops
       // any metadata after the function, so Winston's method only gets the case it handles well.
       const native = args.length === 1 ? getNativeLevelMethods()?.[level] : undefined;
-      return native ? (native as (...a: unknown[]) => winston.Logger).apply(this, args) : shimLazy(this, level, args);
+      return native
+        ? (native as (...a: unknown[]) => winston.Logger).apply(this, args)
+        : shimLazy(this, level, args);
     }
+
     if (args.length === 1) {
       return this.log(level, args[0] as string);
     }
+
     const [message, ...meta] = args;
     return this.log(level, message as string, ...meta);
   }
+
   return logLevel as LevelMethod;
 }
 

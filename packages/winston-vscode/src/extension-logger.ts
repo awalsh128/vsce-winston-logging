@@ -55,6 +55,7 @@ export class ExtensionLogger extends HostLogger implements vscode.Disposable {
     if (options.show) {
       outputChannel.show(true);
     }
+
     this.logSettings(options);
   }
 
@@ -64,7 +65,7 @@ export class ExtensionLogger extends HostLogger implements vscode.Disposable {
       () =>
         `Logger created\n  name: "${options.name}"\n  level: "${this.level}"\n` +
         `  show: ${options.show ?? false}\n  format: ${options.format ? "custom" : "default"}\n` +
-        `  configSection: ${options.configSection === undefined ? "none" : `"${options.configSection}"`}`
+        `  configSection: ${options.configSection === undefined ? "none" : `"${options.configSection}"`}`,
     );
     const section = options.configSection;
     if (section) {
@@ -72,7 +73,7 @@ export class ExtensionLogger extends HostLogger implements vscode.Disposable {
       this.debugLazy(
         () =>
           `Settings for "${section}":\n` +
-          JSON.stringify(vscode.workspace.getConfiguration(section), null, 2)
+          JSON.stringify(vscode.workspace.getConfiguration(section), null, 2),
       );
     }
   }

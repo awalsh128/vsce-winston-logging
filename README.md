@@ -54,12 +54,12 @@ In a VS Code extension, see the [`winston-vscode` README](packages/winston-vscod
 
 ## Packages
 
-| Package | For | Install |
-| --- | --- | --- |
-| [`@awalsh128/winston-host`](packages/winston-host#readme) | The shared base. Depends only on Winston and never imports `vscode`. | `npm install @awalsh128/winston-host` |
-| [`@awalsh128/winston-vscode`](packages/winston-vscode#readme) | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode` |
-| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations, groups, debug levels, secret masking. | `npm install @awalsh128/winston-github-actions` |
-| `vsce-winston-logging` | Deprecated name of `winston-vscode`, kept so existing imports work. | Use `@awalsh128/winston-vscode` instead |
+| Package                                                                       | For                                                                             | Install                                         |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [`@awalsh128/winston-host`](packages/winston-host#readme)                     | The shared base. Depends only on Winston and never imports `vscode`.            | `npm install @awalsh128/winston-host`           |
+| [`@awalsh128/winston-vscode`](packages/winston-vscode#readme)                 | VS Code extensions: `ExtensionLogger`, `OutputChannelTransport`, `forDocument`. | `npm install @awalsh128/winston-vscode`         |
+| [`@awalsh128/winston-github-actions`](packages/winston-github-actions#readme) | GitHub Actions: annotations, groups, debug levels, secret masking.              | `npm install @awalsh128/winston-github-actions` |
+| `vsce-winston-logging`                                                        | Deprecated name of `winston-vscode`, kept so existing imports work.             | Use `@awalsh128/winston-vscode` instead         |
 
 ## Writing an adapter
 

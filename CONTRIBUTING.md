@@ -13,12 +13,12 @@ This is an npm workspaces monorepo. Package builds depend on each other's `dist/
 workspaces are listed in dependency order in the root `package.json`, and `check` builds before it
 typechecks and tests.
 
-| Package                                                         | What it is                                                  |
-| --------------------------------------------------------------- | ----------------------------------------------------------- |
-| [`winston-host`](packages/winston-host)                         | Shared base. Depends only on Winston; never imports `vscode` |
-| [`winston-vscode`](packages/winston-vscode)                     | VS Code adapter; re-exports the base                         |
-| [`winston-github-actions`](packages/winston-github-actions)     | GitHub Actions adapter; re-exports the base                  |
-| [`vsce-winston-logging`](packages/vsce-winston-logging)         | Deprecated shim that re-exports `winston-vscode`             |
+| Package                                                     | What it is                                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------------ |
+| [`winston-host`](packages/winston-host)                     | Shared base. Depends only on Winston; never imports `vscode` |
+| [`winston-vscode`](packages/winston-vscode)                 | VS Code adapter; re-exports the base                         |
+| [`winston-github-actions`](packages/winston-github-actions) | GitHub Actions adapter; re-exports the base                  |
+| [`vsce-winston-logging`](packages/vsce-winston-logging)     | Deprecated shim that re-exports `winston-vscode`             |
 
 Keep host-specific imports out of `winston-host`. A new host is a new package that implements `Host`.
 
@@ -79,12 +79,12 @@ directory. `publish.yml` runs
 dependency order, with the package's `working-directory`, `tag-format`, `commit-paths` and
 `pin-dependencies`:
 
-| Package                  | Tags                          | Depends on (pinned at release)  |
-| ------------------------ | ----------------------------- | ------------------------------- |
-| `winston-host`           | `winston-host-vX.Y.Z`         |                                 |
-| `winston-vscode`         | `winston-vscode-vX.Y.Z`       | `winston-host`                  |
-| `winston-github-actions` | `winston-github-actions-vX.Y.Z` | `winston-host`                |
-| `vsce-winston-logging`   | `vX.Y.Z` (its original tags)  | `winston-vscode`                |
+| Package                  | Tags                            | Depends on (pinned at release) |
+| ------------------------ | ------------------------------- | ------------------------------ |
+| `winston-host`           | `winston-host-vX.Y.Z`           |                                |
+| `winston-vscode`         | `winston-vscode-vX.Y.Z`         | `winston-host`                 |
+| `winston-github-actions` | `winston-github-actions-vX.Y.Z` | `winston-host`                 |
+| `vsce-winston-logging`   | `vX.Y.Z` (its original tags)    | `winston-vscode`               |
 
 - Packages keep the placeholder version, and internal dependencies keep the placeholder too. At
   release, each internal dependency becomes `^` and the latest released version of that package, in

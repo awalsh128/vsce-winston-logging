@@ -12,7 +12,7 @@ export enum LogLevel {
 export class Position {
   constructor(
     readonly line: number,
-    readonly character: number
+    readonly character: number,
   ) {}
 }
 
@@ -43,17 +43,33 @@ export class FakeLogOutputChannel {
 
   constructor(
     readonly name: string,
-    public logLevel: LogLevel
+    public logLevel: LogLevel,
   ) {}
 
-  trace(m: string) { this.lines.push(["trace", m]); }
-  debug(m: string) { this.lines.push(["debug", m]); }
-  info(m: string) { this.lines.push(["info", m]); }
-  warn(m: string) { this.lines.push(["warn", m]); }
-  error(m: string) { this.lines.push(["error", m]); }
-  appendLine(m: string) { this.lines.push(["line", m]); }
-  show() { this.shown = true; }
-  dispose() { this.disposed = true; }
+  trace(m: string) {
+    this.lines.push(["trace", m]);
+  }
+  debug(m: string) {
+    this.lines.push(["debug", m]);
+  }
+  info(m: string) {
+    this.lines.push(["info", m]);
+  }
+  warn(m: string) {
+    this.lines.push(["warn", m]);
+  }
+  error(m: string) {
+    this.lines.push(["error", m]);
+  }
+  appendLine(m: string) {
+    this.lines.push(["line", m]);
+  }
+  show() {
+    this.shown = true;
+  }
+  dispose() {
+    this.disposed = true;
+  }
 
   onDidChangeLogLevel(listener: Listener<LogLevel>) {
     this.listeners.push(listener);
@@ -68,7 +84,10 @@ export class FakeLogOutputChannel {
 }
 
 /** Level new channels start at; tests may change it. */
-export const state = { initialLevel: LogLevel.Info, lastChannel: undefined as FakeLogOutputChannel | undefined };
+export const state = {
+  initialLevel: LogLevel.Info,
+  lastChannel: undefined as FakeLogOutputChannel | undefined,
+};
 
 export const window = {
   createOutputChannel(name: string) {

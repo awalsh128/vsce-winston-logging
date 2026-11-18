@@ -62,10 +62,7 @@ export class HostLogger extends LazyLogger implements Disposable {
       level: winstonLevel,
       levels: { ...LOG_LEVELS },
       silent: level === "off",
-      transports: [
-        host.createTransport(winston.format.printf(format)),
-        ...(options.transports ?? []),
-      ],
+      transports: [host.createTransport(winston.format.printf(format)), ...(options.transports ?? [])],
     });
     // Start the extra transports at the host's level too.
     this.transports.forEach((t) => (t.level = winstonLevel));

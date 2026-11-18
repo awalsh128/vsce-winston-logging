@@ -13,5 +13,6 @@ export function toLocation(uri: vscode.Uri, range?: vscode.Range): Location {
       location.endLine = range.end.line;
     }
   }
+
   return location;
 }

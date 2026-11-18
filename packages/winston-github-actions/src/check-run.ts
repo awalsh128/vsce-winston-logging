@@ -117,8 +117,10 @@ export class CheckRunTransport extends TransportStream {
         annotation.start_column = location.column;
         annotation.end_column = location.column;
       }
+
       this.annotations.push(annotation);
     }
+
     next();
   }
 
@@ -134,6 +136,7 @@ export class CheckRunTransport extends TransportStream {
     if (annotations.length === 0) {
       return undefined;
     }
+
     const errors = annotations.filter((a) => a.annotation_level === "failure").length;
     const output = (batch: CheckAnnotation[]): CheckOutput => ({
       title: this.name,
@@ -158,6 +161,7 @@ export class CheckRunTransport extends TransportStream {
         output: output(annotations.slice(i, i + MAX_ANNOTATIONS_PER_REQUEST)),
       });
     }
+
     return data.id;
   }
 }

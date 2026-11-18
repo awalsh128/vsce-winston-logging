@@ -12,11 +12,19 @@ describe("targetFromEnv", () => {
   };
 
   it("uses GITHUB_REPOSITORY and GITHUB_SHA", () => {
-    expect(targetFromEnv({ GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "merge" })).to.deep.equal({ owner: "o", repo: "r", sha: "merge" });
+    expect(targetFromEnv({ GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "merge" })).to.deep.equal({
+      owner: "o",
+      repo: "r",
+      sha: "merge",
+    });
   });
 
   it("uses a pull request's head commit over GITHUB_SHA", () => {
-    const env = { GITHUB_REPOSITORY: "o/r", GITHUB_SHA: "merge", GITHUB_EVENT_PATH: event({ pull_request: { head: { sha: "head" } } }) };
+    const env = {
+      GITHUB_REPOSITORY: "o/r",
+      GITHUB_SHA: "merge",
+      GITHUB_EVENT_PATH: event({ pull_request: { head: { sha: "head" } } }),
+    };
     expect(targetFromEnv(env).sha).to.equal("head");
   });
 
@@ -33,7 +41,9 @@ describe("targetFromEnv", () => {
   });
 
   it("missing repository or commit throws", () => {
-    expect(() => targetFromEnv({ GITHUB_REPOSITORY: "o/r" })).to.throw("Can't tell the repository and commit");
+    expect(() => targetFromEnv({ GITHUB_REPOSITORY: "o/r" })).to.throw(
+      "Can't tell the repository and commit",
+    );
     expect(() => targetFromEnv({ GITHUB_SHA: "x" })).to.throw("Can't tell the repository and commit");
   });
 });

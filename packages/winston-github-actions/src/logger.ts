@@ -51,6 +51,7 @@ export class GroupBenchmark extends Benchmark implements Disposable {
     if (this.grouped) {
       this.owner.endGroup();
     }
+
     this.owner.logLazy(this.level, () => `${this.title} (${this.getDeltaAsText()})`);
   }
 }
@@ -94,6 +95,7 @@ export class ActionsLogger extends HostLogger {
     if (this.groupOpen) {
       return false;
     }
+
     this.groupOpen = true;
     this.core.startGroup(title);
     return true;

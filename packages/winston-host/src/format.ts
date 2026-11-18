@@ -8,6 +8,7 @@ export function toLogText(value: unknown): string {
   if (typeof value === "string") {
     return value;
   }
+
   return util.inspect(value, { depth: null, compact: false, colors: false, getters: true });
 }
 
@@ -19,6 +20,7 @@ export function defaultFormat(info: TransformableInfo): string {
   if (info.error) {
     return toLogText(info);
   }
+
   const location = getLocation(info);
   const prefix = location ? `${location.path}${rangeText(location)}: ` : "";
   return `${prefix}${toLogText(info.message)}`;
@@ -39,6 +41,7 @@ export function logAndGetError(logger: winston.Logger, error: unknown): Error {
   } else {
     err = new Error(toLogText(error));
   }
+
   logger.error(err.message, { error: err, stack: err.stack });
   return err;
 }

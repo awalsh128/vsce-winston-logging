@@ -10,16 +10,20 @@ export function toAnnotation(location?: Location): AnnotationProperties | undefi
   if (!location) {
     return undefined;
   }
+
   const properties: AnnotationProperties = { file: location.path };
   if (location.line !== undefined) {
     properties.startLine = location.line;
   }
+
   if (location.endLine !== undefined) {
     properties.endLine = location.endLine;
   }
+
   if (location.column !== undefined) {
     properties.startColumn = location.column;
   }
+
   return properties;
 }
 
@@ -85,6 +89,7 @@ export class ActionsTransport extends TransportStream {
     } else {
       core[command](message);
     }
+
     next();
   }
 }

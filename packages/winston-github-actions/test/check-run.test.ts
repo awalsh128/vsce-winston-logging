@@ -28,7 +28,16 @@ function fakeOctokit(): ChecksOctokit & { calls: Call[] } {
 }
 
 const target = { owner: "o", repo: "r", sha: "abc123" };
-const quietCore = { info() {}, debug() {}, warning() {}, error() {}, isDebug: () => false, startGroup() {}, endGroup() {}, setSecret() {} } as Core;
+const quietCore = {
+  info() {},
+  debug() {},
+  warning() {},
+  error() {},
+  isDebug: () => false,
+  startGroup() {},
+  endGroup() {},
+  setSecret() {},
+} as Core;
 
 describe("CheckRunTransport", () => {
   let octokit: ReturnType<typeof fakeOctokit>;
@@ -63,7 +72,15 @@ describe("CheckRunTransport", () => {
       summary: "1 error(s) and 1 warning(s) were logged.",
       annotations: [
         { path: "src/a.ts", start_line: 3, end_line: 6, annotation_level: "failure", message: "bad" },
-        { path: "src/b.ts", start_line: 9, end_line: 9, start_column: 4, end_column: 4, annotation_level: "warning", message: "iffy" },
+        {
+          path: "src/b.ts",
+          start_line: 9,
+          end_line: 9,
+          start_column: 4,
+          end_column: 4,
+          annotation_level: "warning",
+          message: "iffy",
+        },
       ],
     });
   });
@@ -92,6 +109,7 @@ describe("CheckRunTransport", () => {
   it("sends annotations in batches of 50, appending to the same check run", async () => {
     const located = logger.forLocation({ path: "a.ts", line: 1 });
     for (let i = 0; i < 120; i++) located.warn(`w${i}`);
+
     await flush();
     await transport.flush();
 
@@ -125,9 +143,17 @@ describe("CheckRunTransport", () => {
     it("sends the REST requests the Checks API expects", async () => {
       const requests: { method: string; url: string; body: any }[] = [];
       const fetch = async (url: string | URL | Request, init?: RequestInit) => {
-        requests.push({ method: String(init?.method), url: String(url), body: JSON.parse(String(init?.body ?? "null")) });
-        return new Response(JSON.stringify({ id: 42 }), { status: 200, headers: { "content-type": "application/json" } });
+        requests.push({
+          method: String(init?.method),
+          url: String(url),
+          body: JSON.parse(String(init?.body ?? "null")),
+        });
+        return new Response(JSON.stringify({ id: 42 }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
       };
+
       const real = new CheckRunTransport({
         octokit: getOctokit("token", { request: { fetch } }),
         target,
@@ -135,6 +161,7 @@ describe("CheckRunTransport", () => {
       const realLogger = new ActionsLogger({ core: quietCore, env: {}, transports: [real] });
       const located = realLogger.forLocation({ path: "a.ts", line: 1 });
       for (let i = 0; i < 51; i++) located.error(`e${i}`);
+
       await flush();
       const id = await real.flush();
       realLogger.dispose();
@@ -144,7 +171,11 @@ describe("CheckRunTransport", () => {
         "POST /repos/o/r/check-runs",
         "PATCH /repos/o/r/check-runs/42",
       ]);
-      expect(requests[0]!.body).to.deep.include({ name: "Log annotations", head_sha: "abc123", conclusion: "neutral" });
+      expect(requests[0]!.body).to.deep.include({
+        name: "Log annotations",
+        head_sha: "abc123",
+        conclusion: "neutral",
+      });
       expect(requests[0]!.body.output.annotations).to.have.length(50);
       expect(requests[1]!.body.output.annotations).to.have.length(1);
     });

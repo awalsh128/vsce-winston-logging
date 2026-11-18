@@ -30,6 +30,7 @@ export function setLogLevel(logger: winston.Logger, level: LogLevelOrOff): void 
     logger.silent = true;
     return;
   }
+
   logger.silent = false;
   logger.level = level;
   logger.transports.forEach((t) => (t.level = level));

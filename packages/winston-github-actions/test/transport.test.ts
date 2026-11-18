@@ -9,7 +9,8 @@ function fakeCore(): Core & { calls: Call[] } {
   const calls: Call[] = [];
   const record =
     (method: string) =>
-    (...args: unknown[]) => void calls.push([method, ...args]);
+    (...args: unknown[]) =>
+      void calls.push([method, ...args]);
   return {
     calls,
     info: record("info"),
@@ -52,9 +53,7 @@ describe("ActionsTransport", () => {
     const logger = winston.createLogger({ transports: [new ActionsTransport({ core })] });
     logger.child({ location: { path: "a.ts", line: 3, endLine: 5 } }).warn("careful");
     await flush();
-    expect(core.calls).to.deep.equal([
-      ["warning", "careful", { file: "a.ts", startLine: 3, endLine: 5 }],
-    ]);
+    expect(core.calls).to.deep.equal([["warning", "careful", { file: "a.ts", startLine: 3, endLine: 5 }]]);
   });
 
   it("writes the formatted line when the transport has a format", async () => {

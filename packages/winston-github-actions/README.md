@@ -33,12 +33,12 @@ logger.debugLazy(() => `Config: ${JSON.stringify(config)}`); // only built when 
 
 ## Levels
 
-| Logger method | `@actions/core` | Shown |
-| --- | --- | --- |
-| `error` | `error`, with file and lines from the location | Always |
-| `warn` | `warning`, with file and lines from the location | Always |
-| `info` | `info` | Always |
-| `debug`, `trace` | `debug` | When debug logging is on |
+| Logger method    | `@actions/core`                                  | Shown                    |
+| ---------------- | ------------------------------------------------ | ------------------------ |
+| `error`          | `error`, with file and lines from the location   | Always                   |
+| `warn`           | `warning`, with file and lines from the location | Always                   |
+| `info`           | `info`                                           | Always                   |
+| `debug`, `trace` | `debug`                                          | When debug logging is on |
 
 The level is `trace` when `core.isDebug()`, `RUNNER_DEBUG=1`, or `ACTIONS_STEP_DEBUG` is `true` or
 `1`, and `info` otherwise. It is read once when the logger is created.
@@ -59,6 +59,7 @@ logger.maskSecret(token); // the runner masks it in the workflow log from now on
 ```
 
 Groups don't nest in a workflow log, so a group started inside another only logs its time.
+
 ## Using the transport alone
 
 `ActionsTransport` works in any Winston logger, so you can skip `ActionsLogger`:
@@ -95,12 +96,12 @@ logger.forLocation({ path: "src/app.ts", line: 3 }).error("Block is not sorted")
 await checkRun.flush(); // one check run with every collected annotation
 ```
 
-| Option | Default | Purpose |
-| --- | --- | --- |
-| `octokit` | required | An Octokit with the Checks API |
-| `target` | `targetFromEnv()` | `{ owner, repo, sha }`; reads `GITHUB_REPOSITORY`, and a pull request's head commit or `GITHUB_SHA` |
-| `name` | `Log annotations` | The check run's name |
-| `conclusion` | `neutral` | How it concludes; `neutral` keeps logged errors from failing the commit's checks |
+| Option       | Default           | Purpose                                                                                             |
+| ------------ | ----------------- | --------------------------------------------------------------------------------------------------- |
+| `octokit`    | required          | An Octokit with the Checks API                                                                      |
+| `target`     | `targetFromEnv()` | `{ owner, repo, sha }`; reads `GITHUB_REPOSITORY`, and a pull request's head commit or `GITHUB_SHA` |
+| `name`       | `Log annotations` | The check run's name                                                                                |
+| `conclusion` | `neutral`         | How it concludes; `neutral` keeps logged errors from failing the commit's checks                    |
 
 > [!IMPORTANT]
 > The job needs `permissions: checks: write`. Pull requests from forks get a read-only token, so

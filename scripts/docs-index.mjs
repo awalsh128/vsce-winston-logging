@@ -6,7 +6,9 @@ const packages = readdirSync(new URL("packages/", root)).filter((name) =>
   existsSync(new URL(`docs/api/${name}/index.html`, root)),
 );
 const items = packages.map((name) => {
-  const { name: npmName, description } = JSON.parse(readFileSync(new URL(`packages/${name}/package.json`, root), "utf8"));
+  const { name: npmName, description } = JSON.parse(
+    readFileSync(new URL(`packages/${name}/package.json`, root), "utf8"),
+  );
   return `    <li><a href="${name}/">${npmName}</a>: ${description.replace(/</g, "&lt;")}</li>`;
 });
 const html = `<!doctype html>

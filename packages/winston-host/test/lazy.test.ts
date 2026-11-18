@@ -1,6 +1,13 @@
 import { expect } from "chai";
 import * as winston from "winston";
-import { findNativeLazy, HostLogger, LazyLogger, resetNativeLazy, usesNativeLazy, type LogLevel } from "../src";
+import {
+  findNativeLazy,
+  HostLogger,
+  LazyLogger,
+  resetNativeLazy,
+  usesNativeLazy,
+  type LogLevel,
+} from "../src";
 import { FakeHost } from "./fake-host";
 
 /** Lets the transports flush, since winston writes asynchronously. */
@@ -25,11 +32,14 @@ function createLoggerWithLazyPr(calls: { count: number }): typeof winston.create
         if (typeof args[0] === "function") {
           calls.count++;
           if (!this.isLevelEnabled(level)) return this;
+
           args = [(args[0] as () => unknown)()];
         }
+
         return original.apply(this, args);
       };
     }
+
     return logger;
   };
 }
@@ -72,7 +82,9 @@ describe("lazy logging", () => {
       const seen: unknown[] = [];
       logger.add(
         new winston.transports.Stream({
-          stream: new (require("node:stream").Writable)({ write: (_c: unknown, _e: unknown, cb: () => void) => cb() }),
+          stream: new (require("node:stream").Writable)({
+            write: (_c: unknown, _e: unknown, cb: () => void) => cb(),
+          }),
           format: winston.format((info) => (seen.push(info.requestId), info))(),
         }),
       );
@@ -87,7 +99,9 @@ describe("lazy logging", () => {
       const messages: unknown[] = [];
       logger.add(
         new winston.transports.Stream({
-          stream: new (require("node:stream").Writable)({ write: (_c: unknown, _e: unknown, cb: () => void) => cb() }),
+          stream: new (require("node:stream").Writable)({
+            write: (_c: unknown, _e: unknown, cb: () => void) => cb(),
+          }),
           format: winston.format((info) => (messages.push(info.message), info))(),
         }),
       );
@@ -130,7 +144,10 @@ describe("lazy logging", () => {
       await flush();
 
       expect(calls).to.equal(0);
-      expect(host.lines).to.deep.equal([["info", "shown"], ["warn", "also shown"]]);
+      expect(host.lines).to.deep.equal([
+        ["info", "shown"],
+        ["warn", "also shown"],
+      ]);
     });
 
     it("type-checks the function overload on a plain winston logger (compile-time interception)", () => {
@@ -196,7 +213,9 @@ describe("lazy logging", () => {
       const lazy = new HostLogger(new FakeHost("info"), {
         transports: [
           new winston.transports.Stream({
-            stream: new (require("node:stream").Writable)({ write: (_c: unknown, _e: unknown, cb: () => void) => cb() }),
+            stream: new (require("node:stream").Writable)({
+              write: (_c: unknown, _e: unknown, cb: () => void) => cb(),
+            }),
             format: winston.format((info) => (seen.push(info.requestId), info))(),
           }),
         ],

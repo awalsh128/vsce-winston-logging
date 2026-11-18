@@ -23,9 +23,11 @@ export function rangeText(location?: Pick<Location, "line" | "endLine">): string
   if (location?.line === undefined) {
     return "";
   }
+
   if (location.endLine === undefined || location.endLine === location.line) {
     return `[${location.line}]`;
   }
+
   return `[${location.line}:${location.endLine}]`;
 }
 

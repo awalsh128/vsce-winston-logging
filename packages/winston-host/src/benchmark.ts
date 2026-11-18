@@ -55,6 +55,7 @@ export class DisposableBenchmark extends Benchmark implements Disposable {
     if (this.logger.silent || !this.logger.isLevelEnabled(this.getLog().level)) {
       return;
     }
+
     const { level, message } = this.getLog();
     this.logger.logLazy(level, () => `${message} (${this.getDeltaAsText()})`);
   }

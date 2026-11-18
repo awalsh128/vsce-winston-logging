@@ -14,6 +14,7 @@ function readPullRequestHeadSha(env: NodeJS.ProcessEnv): string | undefined {
   if (!eventPath || !existsSync(eventPath)) {
     return undefined;
   }
+
   const event = JSON.parse(readFileSync(eventPath, "utf8")) as {
     pull_request?: { head?: { sha?: string } };
   };
@@ -34,5 +35,6 @@ export function targetFromEnv(env: NodeJS.ProcessEnv = process.env): CheckTarget
       "Can't tell the repository and commit to annotate; set GITHUB_REPOSITORY and GITHUB_SHA.",
     );
   }
+
   return { owner, repo, sha };
 }
