@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidSaveTextDocument((document) => {
       const docLogger = logger.forDocument(document.uri, new vscode.Range(2, 0, 6, 0));
       docLogger.warn("Block is not sorted");
-    })
+    }),
   );
 }
 ```
@@ -171,7 +171,7 @@ context.subscriptions.push(
     if (e.affectsConfiguration("myExt.logFile")) {
       logger.setFileLogging(setting());
     }
-  })
+  }),
 );
 ```
 

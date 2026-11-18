@@ -4,7 +4,6 @@ import {
   plainFormat,
   type Disposable,
   type Host,
-  type LazyLogger,
   type LogLevel,
   type LogLevelOrOff,
   type HostLoggerOptions,
@@ -39,21 +38,21 @@ export class GroupBenchmark extends Benchmark implements Disposable {
 
   /** @internal */
   constructor(
-    private readonly logger: LazyLogger,
+    private readonly owner: ActionsLogger,
     private readonly title: string,
     private readonly level: LogLevel,
-    private readonly grouping: { start(title: string): boolean; end(): void },
   ) {
     super();
-    this.grouped = grouping.start(title);
+    this.grouped = owner.startGroup(title);
   }
 
   /** Ends the group and logs the title with the elapsed time. */
   dispose(): void {
     if (this.grouped) {
-      this.grouping.end();
+      this.owner.endGroup();
     }
-    this.logger.logLazy(this.level, () => `${this.title} (${this.getDeltaAsText()})`);
+
+    this.owner.logLazy(this.level, () => `${this.title} (${this.getDeltaAsText()})`);
   }
 }
 
@@ -83,20 +82,29 @@ export class ActionsLogger extends HostLogger {
    * @param level The level to log the time at. Defaults to `info`.
    */
   group(title: string, level: LogLevel = "info"): GroupBenchmark {
-    return new GroupBenchmark(this, title, level, {
-      start: (name) => {
-        if (this.groupOpen) {
-          return false;
-        }
-        this.groupOpen = true;
-        this.core.startGroup(name);
-        return true;
-      },
-      end: () => {
-        this.groupOpen = false;
-        this.core.endGroup();
-      },
-    });
+    return new GroupBenchmark(this, title, level);
+  }
+
+  /**
+   * Opens a log group unless one is open already; groups can't nest.
+   *
+   * @internal
+   * @returns Whether a group was opened, so the caller knows to end it.
+   */
+  startGroup(title: string): boolean {
+    if (this.groupOpen) {
+      return false;
+    }
+
+    this.groupOpen = true;
+    this.core.startGroup(title);
+    return true;
+  }
+
+  /** @internal */
+  endGroup(): void {
+    this.groupOpen = false;
+    this.core.endGroup();
   }
 
   /** Masks a value in the workflow log from now on, such as a token read at runtime. */

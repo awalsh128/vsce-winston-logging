@@ -1,8 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "src/index.ts"
-  ],
+  "entryPoints": ["src/index.ts"],
   "tsconfig": "tsconfig.build.json",
   "outputs": [
     {
@@ -13,9 +11,7 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
-  "sort": [
-    "source-order"
-  ],
+  "sort": ["source-order"],
   "readme": "none",
   "gitRevision": "{branch}"
 }

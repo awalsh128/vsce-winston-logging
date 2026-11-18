@@ -18,7 +18,8 @@ function fakeCore(debug = false): Core & { calls: Call[] } {
   const calls: Call[] = [];
   const record =
     (method: string) =>
-    (...args: unknown[]) => void calls.push([method, ...args]);
+    (...args: unknown[]) =>
+      void calls.push([method, ...args]);
   return {
     calls,
     info: record("info"),
@@ -71,6 +72,7 @@ describe("winston-github-actions", () => {
       core = fakeCore(debug);
       logger = new ActionsLogger({ core, env: {} });
     };
+
     afterEach(() => logger.dispose());
 
     it("maps levels to workflow commands", async () => {
@@ -156,7 +158,10 @@ describe("winston-github-actions", () => {
       logger.group("Next").dispose();
       await flush();
 
-      expect(core.calls.filter(([m]) => m === "startGroup").map(([, t]) => t)).to.deep.equal(["Outer", "Next"]);
+      expect(core.calls.filter(([m]) => m === "startGroup").map(([, t]) => t)).to.deep.equal([
+        "Outer",
+        "Next",
+      ]);
       expect(core.calls.filter(([m]) => m === "endGroup")).to.have.length(2);
     });
 

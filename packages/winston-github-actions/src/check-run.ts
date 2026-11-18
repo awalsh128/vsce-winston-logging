@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
 import { getLocation, plainFormat } from "@awalsh128/winston-host";
 import type { TransformableInfo } from "logform";
 import { LEVEL, MESSAGE } from "triple-beam";
 import * as winston from "winston";
 import TransportStream from "winston-transport";
+import { targetFromEnv, type CheckTarget } from "./check-target";
 
 /** GitHub accepts at most this many annotations in one request. */
 export const MAX_ANNOTATIONS_PER_REQUEST = 50;
@@ -55,37 +55,6 @@ export interface ChecksOctokit {
   };
 }
 
-/** The repository and commit a check run is attached to. */
-export interface CheckTarget {
-  owner: string;
-  repo: string;
-  /** The commit to annotate. For pull requests, the head commit, which is what the diff shows. */
-  sha: string;
-}
-
-/**
- * Reads the target from the environment of a workflow run: `GITHUB_REPOSITORY`, and the pull
- * request's head commit from the event payload when there is one, otherwise `GITHUB_SHA`.
- *
- * @throws When the repository or commit can't be determined.
- */
-export function targetFromEnv(env: NodeJS.ProcessEnv = process.env): CheckTarget {
-  const [owner, repo] = (env.GITHUB_REPOSITORY ?? "").split("/");
-  let sha = env.GITHUB_SHA;
-  try {
-    const event = JSON.parse(readFileSync(env.GITHUB_EVENT_PATH ?? "", "utf8")) as {
-      pull_request?: { head?: { sha?: string } };
-    };
-    sha = event.pull_request?.head?.sha ?? sha;
-  } catch {
-    // No event payload: use GITHUB_SHA.
-  }
-  if (!owner || !repo || !sha) {
-    throw new Error("Can't tell the repository and commit to annotate; set GITHUB_REPOSITORY and GITHUB_SHA.");
-  }
-  return { owner, repo, sha };
-}
-
 /** Options for `CheckRunTransport`. */
 export interface CheckRunTransportOptions extends TransportStream.TransportStreamOptions {
   /** An Octokit with the Checks API, such as `github.getOctokit(token)`. */
@@ -135,16 +104,23 @@ export class CheckRunTransport extends TransportStream {
     if (location && (level === "error" || level === "warn")) {
       const line = location.line ?? 1;
       const endLine = location.endLine ?? line;
-      this.annotations.push({
+      const annotation: CheckAnnotation = {
         path: location.path,
         start_line: line,
         end_line: endLine,
-        // GitHub only accepts columns on single-line annotations.
-        ...(location.column !== undefined && endLine === line ? { start_column: location.column, end_column: location.column } : {}),
         annotation_level: level === "error" ? "failure" : "warning",
         message: String(info[MESSAGE] ?? info.message ?? ""),
-      });
+      };
+      // GitHub only accepts columns on single-line annotations.
+      const singleLine = endLine === line;
+      if (location.column !== undefined && singleLine) {
+        annotation.start_column = location.column;
+        annotation.end_column = location.column;
+      }
+
+      this.annotations.push(annotation);
     }
+
     next();
   }
 
@@ -160,6 +136,7 @@ export class CheckRunTransport extends TransportStream {
     if (annotations.length === 0) {
       return undefined;
     }
+
     const errors = annotations.filter((a) => a.annotation_level === "failure").length;
     const output = (batch: CheckAnnotation[]): CheckOutput => ({
       title: this.name,
@@ -184,6 +161,7 @@ export class CheckRunTransport extends TransportStream {
         output: output(annotations.slice(i, i + MAX_ANNOTATIONS_PER_REQUEST)),
       });
     }
+
     return data.id;
   }
 }
