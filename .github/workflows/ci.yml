@@ -59,6 +59,9 @@ jobs:
           create_pr_comments: false
           create_issues: false
 
+      - name: Check formatting
+        run: npm run format:check
+
       # Packages import each other through their dist/, so everything builds first.
       - name: Build
         run: npm run build

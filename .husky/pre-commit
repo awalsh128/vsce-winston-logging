@@ -1,2 +1,4 @@
 # Husky runs this before each commit; `npm install` enables it through the prepare script.
+# Formats staged files with Prettier, then runs the full check.
+npx --no -- lint-staged
 npm run --silent check

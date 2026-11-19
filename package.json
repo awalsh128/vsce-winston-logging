@@ -20,7 +20,9 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
     "check": "npm run build && npm run typecheck && npm test",
-    "docs:api": "npm run docs:api --workspaces --if-present && node scripts/docs-index.mjs"
+    "docs:api": "npm run docs:api --workspaces --if-present && node scripts/docs-index.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "commitlint": {
     "extends": [
@@ -37,7 +39,10 @@
     "@types/vscode": "~1.74.0",
     "chai": "^6.2.2",
     "husky": "^9.1.7",
+    "lint-staged": "~17.6.0",
     "mocha": "^12.0.3",
+    "prettier": "~3.9.10",
+    "prettier-plugin-padding-lines": "^0.1.0",
     "tsx": "^4.21.0",
     "typedoc": "^0.28.20",
     "typescript": "^5.9.2"
