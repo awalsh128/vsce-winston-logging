@@ -22,6 +22,28 @@ npm workspaces monorepo of Winston logging adapters. `CONTRIBUTING.md` has the f
 - `dist/` and `docs/api/` are generated and gitignored. Don't edit them.
 - Feature branches target `staging`. `main` is always an ancestor of `staging` and never gets commits of its own: never merge a PR into it (the Promote workflow fast-forwards it).
 
+## Owned Dependency Chain
+
+These `awalsh128` repos depend on each other. Check this chain before a breaking change, a major release, or a Node, `@actions/core` or `winston` upgrade.
+
+| Repo                                                 | Ships                                                                                            | Depends on (owned)                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `winston-host-adapters`                              | npm: `@awalsh128/winston-host`, `@awalsh128/winston-github-actions`, `@awalsh128/winston-vscode` | `winston-host` (same workspace); the `npm-publish-strict` action to publish |
+| `npm-publish-strict`                                 | GitHub Action                                                                                    | `@awalsh128/winston-github-actions` (caret range, bundled into `dist/`)     |
+| `ts-apt`                                             | npm: `ts-apt`                                                                                    | the `npm-publish-strict` action to publish                                  |
+| `cache-apt-pkgs-action` (v2 on `staging-2`/`main-2`) | GitHub Action                                                                                    | `ts-apt` (exact version, or a full commit SHA while unreleased)             |
+
+- Code flows `winston-host` → `winston-github-actions` → `npm-publish-strict`, and `ts-apt` → `cache-apt-pkgs-action`.
+- Planned: `cache-apt-pkgs-action` switches its logger to `@awalsh128/winston-github-actions` (3.x, exact pin).
+- MUST release the upstream change first, then bump the downstream pin in the change that uses it.
+- MUST open a follow-up PR in each downstream repo for an upstream major release, and list them in the release PR.
+- MUST keep these aligned across the chain: ESM, `@actions/core` 3.x (`winston-github-actions` declares it as a `^3` peer), `winston` 3.x and `winston-transport` 4.x.
+- Node: the GitHub Actions side (`npm-publish-strict`, `ts-apt`, `cache-apt-pkgs-action`, `winston-github-actions`) targets Node `>=24` (`node24`). `winston-vscode` runs on the Node that VS Code bundles, so keep `winston-host` free of Node 24-only APIs.
+- `npm-publish-strict` and `winston-host-adapters` form a loop. `winston-host-adapters` is held on `npm-publish-strict` `cee67e7` (commented `v1.1.0`, no tag) on purpose: its `publish.yml` releases each workspace package with per-package inputs (`working-directory`, `tag-format`, `commit-paths`, `pin-dependencies`, `dry-run`, `git-credentials`) that later versions removed. A newer action ignores an undeclared input with only a warning, so `dry-run: true` would release for real. Dependabot ignores that action there.
+- NEVER bump `winston-host-adapters` to a newer `npm-publish-strict` until that action supports workspace packages again; a change in `npm-publish-strict` must not assume it can upgrade.
+- `ts-apt` pins `npm-publish-strict` to a full commit SHA; make it one a release tag points at, with a matching `# vX.Y.Z` comment (`git tag --points-at <sha>`). Its current pin `6b3ccbe` (commented `v1.0.0`) has no tag; `v1.0.0` is `b778d3a`.
+- This repo is the top of the chain: a breaking change to `@awalsh128/winston-github-actions` or its `@actions/core` peer range needs a major release and a follow-up PR in `npm-publish-strict` (and `cache-apt-pkgs-action` once it uses it).
+
 ## Housekeeping
 
 - Delete branches, local and remote, whose work is finished: the pull request is merged or closed
