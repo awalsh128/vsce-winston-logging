@@ -43,3 +43,7 @@ updates:
       # Majors follow engines.node, the oldest Node the package supports.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # typedoc's peer range stops at TypeScript 6.0.x, so 7 fails npm ci. Drop this when typedoc
+      # supports it.
+      - dependency-name: "typescript"
+        versions: [">=7"]
