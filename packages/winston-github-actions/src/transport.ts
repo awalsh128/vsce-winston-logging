@@ -1,3 +1,4 @@
+import * as actionsCore from "@actions/core";
 import { getLocation, plainFormat, type Location } from "@awalsh128/winston-host";
 import type { TransformableInfo } from "logform";
 import { LEVEL, MESSAGE } from "triple-beam";
@@ -70,12 +71,12 @@ function commandFor(level: string): Command {
  * ```
  */
 export class ActionsTransport extends TransportStream {
-  private core?: Core;
+  private readonly core: Core;
 
   constructor(opts: ActionsTransportOptions = {}) {
     // Without its own format, a transport would get the logger's, which is JSON by default.
     super({ ...opts, format: opts.format ?? winston.format.printf(plainFormat) });
-    this.core = opts.core;
+    this.core = opts.core ?? actionsCore;
   }
 
   override log(info: TransformableInfo, next: () => void): void {
@@ -83,19 +84,12 @@ export class ActionsTransport extends TransportStream {
     // `info[MESSAGE]` is the formatted line when the transport has a format; otherwise the message.
     const message = String(info[MESSAGE] ?? info.message ?? "");
     const command = commandFor(String(info[LEVEL] ?? info.level ?? "info"));
-    const core = this.core ?? (this.core = loadCore());
     if (command === "error" || command === "warning") {
-      core[command](message, toAnnotation(getLocation(info)));
+      this.core[command](message, toAnnotation(getLocation(info)));
     } else {
-      core[command](message);
+      this.core[command](message);
     }
 
     next();
   }
-}
-
-/** Loads the installed `@actions/core` on first use, so a transport given a `core` never needs it. */
-function loadCore(): Core {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require("@actions/core") as Core;
 }

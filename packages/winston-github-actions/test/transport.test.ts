@@ -82,4 +82,21 @@ describe("ActionsTransport", () => {
     await flush();
     expect(core.calls.map((c) => c[0])).to.deep.equal(["error"]);
   });
+
+  it("writes through the installed @actions/core when none is given", async () => {
+    const written: string[] = [];
+    const write = process.stdout.write;
+    process.stdout.write = ((chunk: string | Uint8Array) => {
+      written.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+    try {
+      winston.createLogger({ transports: [new ActionsTransport()] }).info("default core line");
+      await flush();
+    } finally {
+      process.stdout.write = write;
+    }
+
+    expect(written.join("")).to.contain("default core line");
+  });
 });
