@@ -25,13 +25,13 @@ Start independent subagents in parallel, in one message.
 
 ## Roles
 
-| Role | Use it to | Returns |
-| --- | --- | --- |
-| `explorer` | Find where something lives or how it works in this repo | `<findings>` |
-| `researcher` | Answer a question from external docs or the web | `<findings>` with sources |
-| `planner` | Turn an agreed goal into steps before a large change | `<plan>` |
-| `reviewer` | Check a finished change against the task and repo standards | `<review>` |
-| `verifier` | Run targeted tests or linters | `<result>` |
+| Role         | Use it to                                                   | Returns                   |
+| ------------ | ----------------------------------------------------------- | ------------------------- |
+| `explorer`   | Find where something lives or how it works in this repo     | `<findings>`              |
+| `researcher` | Answer a question from external docs or the web             | `<findings>` with sources |
+| `planner`    | Turn an agreed goal into steps before a large change        | `<plan>`                  |
+| `reviewer`   | Check a finished change against the task and repo standards | `<review>`                |
+| `verifier`   | Run targeted tests or linters                               | `<result>`                |
 
 ## The brief
 
@@ -39,16 +39,20 @@ A subagent sees none of this conversation. Fill in every section:
 
 ```markdown
 ## Goal
+
 <What to find out or check, and why it matters to the task.>
 
 ## Context
+
 <Paste what you already have: the diff, the issue text, file paths, error output.
 Don't make the subagent rediscover it.>
 
 ## Decisions already made
+
 <Choices that are settled, and what is out of scope.>
 
 ## Output
+
 <Leave out to get the role's default block. Otherwise: what to add or change.>
 ```
 

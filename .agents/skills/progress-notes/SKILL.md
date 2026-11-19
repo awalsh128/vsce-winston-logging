@@ -25,18 +25,23 @@ Keep the file under about 60 lines. Rewrite it rather than appending to it.
 # <Task in one line>
 
 ## Goal
+
 <What done looks like, including how it will be checked.>
 
 ## Decisions
+
 - <Decision>: <why>. Settled; don't revisit without new information.
 
 ## Done
+
 - <Milestone> (<commit sha>)
 
 ## Next
+
 1. <The next concrete step: file, function, command.>
 
 ## Open questions
+
 - <What is blocked, and on whom.>
 ```
 

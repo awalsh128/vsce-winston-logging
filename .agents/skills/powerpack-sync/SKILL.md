@@ -15,11 +15,11 @@ never changes files the user hasn't approved.
 
 `.agents/powerpack.json`:
 
-| Key | Meaning |
-| --- | --- |
-| `mode` | `off` (default): do nothing and say sync is off. `suggest`: report differences and propose patches |
-| `sets` | Per-set override, `{"node": "off", "common": "suggest"}`. Wins over `mode` |
-| `ignore` | Paths never to compare or propose changes to, for example `.github/labels.yaml` |
+| Key      | Meaning                                                                                            |
+| -------- | -------------------------------------------------------------------------------------------------- |
+| `mode`   | `off` (default): do nothing and say sync is off. `suggest`: report differences and propose patches |
+| `sets`   | Per-set override, `{"node": "off", "common": "suggest"}`. Wins over `mode`                         |
+| `ignore` | Paths never to compare or propose changes to, for example `.github/labels.yaml`                    |
 
 If the file is missing, treat `mode` as `off`. Never edit this file unless asked.
 

@@ -3,11 +3,11 @@
 Each role in `subagents/` names a tier in its first frontmatter comment. This table maps a tier to
 each tool's settings. When you change a mapping, update every role with that tier.
 
-| Tier | Roles | Claude Code (`model`, `effort`) | Codex (`model_reasoning_effort`) | Antigravity (`model`) | Copilot |
-| --- | --- | --- | --- | --- | --- |
-| `fast` | explorer, verifier | `haiku`, `low` | `low` | `flash` | session model |
-| `balanced` | researcher | `sonnet`, `medium` | `medium` | `inherit` | session model |
-| `deep` | planner, reviewer | `opus`, `high` | `high` | `pro` | session model |
+| Tier       | Roles              | Claude Code (`model`, `effort`) | Codex (`model_reasoning_effort`) | Antigravity (`model`) | Copilot       |
+| ---------- | ------------------ | ------------------------------- | -------------------------------- | --------------------- | ------------- |
+| `fast`     | explorer, verifier | `haiku`, `low`                  | `low`                            | `flash`               | session model |
+| `balanced` | researcher         | `sonnet`, `medium`              | `medium`                         | `inherit`             | session model |
+| `deep`     | planner, reviewer  | `opus`, `high`                  | `high`                           | `pro`                 | session model |
 
 Codex and Copilot use the session's model, because their model IDs change too often to pin in a
 template. To pin one, add `model:` to the role's `codexcli:` or `copilot:` block. Claude Code's
