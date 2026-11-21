@@ -22,8 +22,9 @@ updates:
       actions:
         patterns: ["*"]
     ignore:
-      # publish.yml releases three packages with v1.1.0's per-package inputs, which later versions
-      # removed (and a removed dry-run input would be ignored, releasing for real). Move this only when
+      # publish.yml releases three packages with the per-package inputs of an untagged commit before
+      # v1.0.0-rc.1, which the tagged versions (v1.0.0, v1.1.0) removed (and a removed dry-run input
+      # would be ignored, releasing for real). Move this only when
       # the release flow is reworked.
       - dependency-name: "awalsh128/npm-publish-strict"
 
