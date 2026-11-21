@@ -94,7 +94,7 @@ jobs:
       # release for real. Dependabot ignores this action for that reason (.github/dependabot.yml).
       - name: Release winston-host
         id: host
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # untagged commit before v1.0.0-rc.1, not the v1.1.0 tag
         with:
           working-directory: packages/winston-host
           tag-format: winston-host-v${version}
@@ -113,7 +113,7 @@ jobs:
 
       - name: Release winston-vscode
         id: vscode
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # untagged commit before v1.0.0-rc.1, not the v1.1.0 tag
         with:
           working-directory: packages/winston-vscode
           tag-format: winston-vscode-v${version}
@@ -133,7 +133,7 @@ jobs:
 
       - name: Release winston-github-actions
         id: actions
-        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # v1.1.0
+        uses: awalsh128/npm-publish-strict@cee67e7616c8f6dbf81b9a2bf098cdfbd518a2fa # untagged commit before v1.0.0-rc.1, not the v1.1.0 tag
         with:
           working-directory: packages/winston-github-actions
           tag-format: winston-github-actions-v${version}
