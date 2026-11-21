@@ -7,6 +7,9 @@
 <p align="center">
   <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI on main"></a>
   <a href="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml?query=branch%3Astaging"><img src="https://github.com/awalsh128/winston-host-adapters/actions/workflows/ci.yml/badge.svg?branch=staging" alt="CI on staging"></a>
+  <a href="https://www.npmjs.com/package/@awalsh128/winston-host"><img src="https://img.shields.io/npm/v/@awalsh128/winston-host?label=winston-host" alt="winston-host"></a>
+  <a href="https://www.npmjs.com/package/@awalsh128/winston-vscode"><img src="https://img.shields.io/npm/v/@awalsh128/winston-vscode?label=winston-vscode" alt="winston-vscode"></a>
+  <a href="https://www.npmjs.com/package/@awalsh128/winston-github-actions"><img src="https://img.shields.io/npm/v/@awalsh128/winston-github-actions?label=winston-github-actions" alt="winston-github-actions"></a>
   <a href="https://github.com/awalsh128/winston-host-adapters/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
